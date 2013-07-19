@@ -443,6 +443,7 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
 
     // create GUI itself (menu bars)
     gui::CGUIMainMenu* MainMenu = new gui::CGUIMainMenu(pGUIEnviroment);
+    // test commit
 
     /*for(s32 i = 0; i < 256; ++i)
             PaintTerrainWithTexture(pTerrainSceneNode, i);*/
