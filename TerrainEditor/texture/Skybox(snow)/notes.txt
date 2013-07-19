@@ -1,0 +1,3 @@
+Skyboxes 
+up-images must be 90deg. left rotated
+down-images must be 90 deg. right rotated
