@@ -27,18 +27,208 @@ video::IImage* pBrush;
  */
 //video::IImage* pTexture;
 
-void drawCircleBrushBorder(video::IVideoDriver* pVideoDriver, core::vector3df circleCenter, f32 circleRadius)
+// TODO write rotation
+// optimum step = terrain grid cell width; how get this?
+/**
+ * paints square brush border that lay on terrain
+ * 
+ * @param pVideoDriver          pointer to IVideoDriver instance
+ * @param pTerrainSceneNode     pointer to ITerrainSceneNode instance
+ * @param brushCenter           brush center point
+ * @param brushRadius           brush radius
+ * @param yAxisRotationAngle    angle rotation around y-axis, for rotation
+ * @param borderColour          brush border colour
+ */
+void drawSquareBrushBorder(video::IVideoDriver* pVideoDriver,
+                           scene::ITerrainSceneNode* pTerrainSceneNode,
+                           core::vector3df brushCenter,
+                           f32 brushRadius,
+                           f32 yAxisRotationAngle,
+                           video::SColor borderColour)
 {
-    core::vector3df pV = core::vector3df(circleRadius, circleCenter.Y, 0);
-    for (f32 r = 0; r < 2 * core::PI; r += 0.1f)
+    // set steps:
+    f32 hoverStep = 0.1f;       // because border must hover alittle over terrain, not stuck in it
+    f32 step = 17.0f;           // vertices space step; optimum = terain grid cell width
+    f32 paintingStepX = step;// * sin(yAxisRotationAngle);      // painting on x-axis
+    f32 paintingStepZ = step;// * cos(yAxisRotationAngle);      // painting on z-axis, they different because of rotation
+    
+    // create line material - line thickness & colour, and set it as material for future paining
+    video::SMaterial lineMaterial;
+    lineMaterial.Thickness = 2.0f;
+    lineMaterial.EmissiveColor = borderColour;
+    pVideoDriver->setMaterial(lineMaterial);
+    
+    // set begin indexes for different sides, optimize calculations
+    // fistSideIndexBegin = 0
+    u32 secondSideIndexBegin = (u32) (2 * brushRadius) / step;      // (2 * brushRadius) / step
+    u32 thirdSideIndexBegin = 2 * secondSideIndexBegin;                 // 2 * (2 * brushRadius) / step
+    u32 forthSideIndexBegin = 3 * secondSideIndexBegin;                 // 3 * (2 * brushRadius) / step
+    
+    // create static arrays of vertices and its indexes; vertex instance & per-side index counter
+    // additional vertex to the end of array to form vertex loop; see more below
+    core::array<video::S3DVertex> verticesList(4 * secondSideIndexBegin + 1);
+    core::array<u16> indicesList(4 * secondSideIndexBegin + 1);
+    
+    video::S3DVertex vertex;
+    
+    u16 indexNumber = 0;
+   
+    // calculate start positions, put them in vertices array and its indexes in index array
+    core::vector3df lowerRightCorner
+            = core::vector3df(brushCenter.X + brushRadius,
+                              pTerrainSceneNode->getHeight(brushCenter.X + brushRadius, brushCenter.Z - brushRadius) + hoverStep,
+                              brushCenter.Z - brushRadius);
+    vertex.Pos = lowerRightCorner;
+    verticesList[indexNumber] = vertex;
+    indicesList[indexNumber] = indexNumber;
+    
+    // TODO find elegant solution
+    // copy first vertex to the end of array to form vertex loop
+    // EPT_LINE_LOOP flag good, but lines created by it are UNDER terrain
+    verticesList[forthSideIndexBegin + secondSideIndexBegin] = vertex;
+    indicesList[forthSideIndexBegin + secondSideIndexBegin] = forthSideIndexBegin + secondSideIndexBegin;
+    
+    core::vector3df lowerLeftCorner 
+            = core::vector3df(brushCenter.X - brushRadius,
+                              pTerrainSceneNode->getHeight(brushCenter.X - brushRadius, brushCenter.Z - brushRadius) + hoverStep,
+                              brushCenter.Z - brushRadius);
+    vertex.Pos = lowerLeftCorner;
+    verticesList[forthSideIndexBegin] = vertex;
+    indicesList[forthSideIndexBegin] = forthSideIndexBegin;
+    
+    core::vector3df upperRightCorner 
+            = core::vector3df(brushCenter.X + brushRadius,
+                              pTerrainSceneNode->getHeight(brushCenter.X + brushRadius, brushCenter.Z + brushRadius) + hoverStep,
+                              brushCenter.Z + brushRadius);
+    vertex.Pos = upperRightCorner;
+    verticesList[secondSideIndexBegin] = vertex;
+    indicesList[secondSideIndexBegin] = secondSideIndexBegin;
+    
+    core::vector3df upperLeftCorner
+            = core::vector3df(brushCenter.X - brushRadius,
+                              pTerrainSceneNode->getHeight( brushCenter.X - brushRadius, brushCenter.Z + brushRadius) + hoverStep,
+                              brushCenter.Z + brushRadius);
+    vertex.Pos = upperLeftCorner;
+    verticesList[thirdSideIndexBegin] = vertex;
+    indicesList[thirdSideIndexBegin] = thirdSideIndexBegin;
+   
+    // for each side recalculate position of next point, fill arrays and swap new and current positions
+    for (indexNumber = 1; indexNumber < secondSideIndexBegin; ++indexNumber)
     {
-        f32 px = circleRadius * cos(r);
-        f32 pz = circleRadius * sin(r);
-
-        pVideoDriver->draw3DLine(pV, core::vector3df(px, circleCenter.Y, pz), video::SColor(255, 255, 255, 0));
-        pV = core::vector3df(px, circleCenter.Y, pz);
+        vertex.Pos 
+                = core::vector3df(lowerRightCorner.X, 
+                                  pTerrainSceneNode->getHeight(lowerRightCorner.X, lowerRightCorner.Z + paintingStepZ) + hoverStep,
+                                  lowerRightCorner.Z + paintingStepZ);
+        lowerRightCorner = vertex.Pos;
+        verticesList[indexNumber] = vertex;
+        indicesList[indexNumber] = indexNumber;
+        
+        vertex.Pos 
+                = core::vector3df(lowerLeftCorner.X + paintingStepX,
+                                  pTerrainSceneNode->getHeight(lowerLeftCorner.X + paintingStepX, lowerLeftCorner.Z) + hoverStep,
+                                  lowerLeftCorner.Z);
+        lowerLeftCorner = vertex.Pos;
+        verticesList[forthSideIndexBegin + indexNumber] = vertex;
+        indicesList[forthSideIndexBegin + indexNumber] = forthSideIndexBegin + indexNumber;
+        
+        vertex.Pos
+                = core::vector3df(upperRightCorner.X - paintingStepX, 
+                                  pTerrainSceneNode->getHeight(upperRightCorner.X - paintingStepX, upperRightCorner.Z) + hoverStep,
+                                  upperRightCorner.Z);
+        upperRightCorner = vertex.Pos;
+        verticesList[secondSideIndexBegin + indexNumber] = vertex;
+        indicesList[secondSideIndexBegin + indexNumber] = secondSideIndexBegin + indexNumber;
+        
+        vertex.Pos 
+                = core::vector3df(upperLeftCorner.X, 
+                                  pTerrainSceneNode->getHeight(upperLeftCorner.X, upperLeftCorner.Z - paintingStepZ) + hoverStep,
+                                  upperLeftCorner.Z - paintingStepZ);
+        upperLeftCorner = vertex.Pos;
+        verticesList[thirdSideIndexBegin + indexNumber] = vertex;
+        indicesList[thirdSideIndexBegin + indexNumber] = thirdSideIndexBegin + indexNumber;
     }
-    pVideoDriver->draw3DLine(pV, core::vector3df(circleRadius, circleCenter.Y, 0), video::SColor(255, 255, 255, 0));
+    
+    // draw everything
+    pVideoDriver->drawVertexPrimitiveList(&verticesList[0],
+                                          4 * secondSideIndexBegin + 1,
+                                          &indicesList[0],
+                                          4 * secondSideIndexBegin,
+                                          video::EVT_STANDARD,
+                                          scene::EPT_LINE_STRIP,
+                                          video::EIT_16BIT);
+
+    // restore default material to video driver
+    pVideoDriver->setMaterial(video::SMaterial());
+}
+
+// TODO rotation (not need in circle, but use for brush direction)
+/**
+ * paints circle brush border that lay on terrain
+ * 
+ * @param pVideoDriver          pointer to IVideoDriver instance
+ * @param pTerrainSceneNode     pointer to ITerrainSceneNode instance
+ * @param brushCenter           brush center point
+ * @param brushRadius           brush radius
+ * @param borderColour           brush border colour
+ */
+void drawCircleBrushBorder(video::IVideoDriver* pVideoDriver,
+                           scene::ITerrainSceneNode* pTerrainSceneNode,
+                           core::vector3df brushCenter,
+                           f32 brushRadius,
+                           video::SColor borderColour)
+{
+    // set steps:
+    f32 hoverStep = 0.1f;       // because border must hover alittle over terrain, not stuck in it
+    f32 step = 0.1f;           // vertices space step
+    
+    // create line material - line thickness & colour, and set it as material for future paining
+    video::SMaterial lineMaterial;
+    lineMaterial.Thickness = 2.0f;
+    lineMaterial.EmissiveColor = borderColour;
+    pVideoDriver->setMaterial(lineMaterial);
+    
+    // create static arrays of vertices and its indexes; vertex instance & per-side index counter
+    u32 verticesCount = core::ceil32(2 * core::PI) / step;
+    core::array<video::S3DVertex> verticesList(verticesCount);
+    core::array<u16> indicesList(verticesCount);
+    
+    video::S3DVertex vertex;
+    
+    u16 indexNumber = 0;
+    
+    // calculate start position
+    vertex.Pos = core::vector3df(brushCenter.X + brushRadius,
+                                 pTerrainSceneNode->getHeight(brushRadius + brushCenter.X, brushCenter.Z) + hoverStep,
+                                 brushCenter.Z);
+    verticesList[indexNumber] = vertex;
+    indicesList[indexNumber] = indexNumber;
+    
+    // for each radian-part recalculate position of next point and fill arrays
+    for (indexNumber = 1; indexNumber < verticesCount; ++indexNumber)
+    {
+        // calculate X and Z coordinates new vertex
+        f32 x = brushCenter.X + brushRadius * cos(indexNumber * step);
+        f32 z = brushCenter.Z + brushRadius * sin(indexNumber * step);
+
+        // fill arrays
+        vertex.Pos = core::vector3df(x,
+                                     pTerrainSceneNode->getHeight(x, z) + hoverStep,
+                                     z);
+        verticesList[indexNumber] = vertex;
+        indicesList[indexNumber] = indexNumber;
+    }
+    
+    // draw everything
+    pVideoDriver->drawVertexPrimitiveList(&verticesList[0],
+                                          verticesCount,
+                                          &indicesList[0],
+                                          verticesCount - 1,
+                                          video::EVT_STANDARD,
+                                          scene::EPT_LINE_STRIP,
+                                          video::EIT_16BIT);
+
+    // restore default material to video driver
+    pVideoDriver->setMaterial(video::SMaterial());
 }
 
 /**
@@ -316,7 +506,6 @@ s32 main(s32 argc, char** argv)
     video::IVideoDriver* pVideoDriver = pDevice->getVideoDriver();
     scene::ISceneManager* pSceneManager = pDevice->getSceneManager();
     //device->getCursorControl()->setVisible(false);
-    pDevice->setWindowCaption(L"Terrain Editor");
 
     // set default texture archive (folder)
     pDevice->getFileSystem()->addFileArchive("texture/");
@@ -338,7 +527,7 @@ pTerrainSceneNode->setScale(core::vector3df(scale, 2.f, scale));
 pTerrainSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 pTerrainSceneNode->setMaterialTexture(0, pVideoDriver->getTexture("pTerrainSceneNode-texture3.jpg"));
     scene::ITriangleSelector* pTerrainSceneNodeSelector = pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);*/
-
+    
     // create skydome and texture manager with default properties
     scene::ISceneNode* skydome = pSceneManager->addSkyDomeSceneNode(pVideoDriver->getTexture("Data/textures/skydome.jpg"), 16, 8, 0.95f, 2.0f);
     skydome->setRotation(core::vector3df(0, -100, 0));
@@ -358,7 +547,7 @@ pTerrainSceneNode->setMaterialTexture(0, pVideoDriver->getTexture("pTerrainScene
                                                                                      scene::ETPS_17, // patchSize
                                                                                      3 // smoothFactor
                                                                                      );
-    //pTerrainSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
+    pTerrainSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
     pTerrainSceneNode->scaleTexture(1.0f, 20.0f);
 
@@ -392,7 +581,7 @@ pTerrainSceneNode->setMaterialTexture(0, pVideoDriver->getTexture("pTerrainScene
 
     //Fourth Pass: the Lightmap
     pTextureManager->addPass(pTerrainSceneNode,
-                             pVideoDriver->getTexture("Data/textures/lm_pTerrainSceneNode.tga"),
+                             pVideoDriver->getTexture("Data/textures/lm_terrain.tga"),
                              pVideoDriver->getTexture("Data/textures/black.jpg"),
                              0,
                              0);
@@ -450,6 +639,8 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
 
     char c[50];
     f32 step = 2.f;
+    f32 yAngle = 0.0f;
+    f32 brushSize = 100.0f;
     bool wireframeMode = false;
     bool editMode = false;
 
@@ -460,7 +651,6 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
             // End event process
             pEventReceiver->endEventProcess();
 
-            drawCircleBrushBorder(pVideoDriver, pTerrainSceneNode->getTerrainCenter(), 10.0f);
 
             // Key pressing events
 
@@ -512,10 +702,14 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
             else if (pEventReceiver->isKeyPressed(KEY_F4))
             {
                 step += 1.f;
+                yAngle++;
+                brushSize++;
             }
             else if (pEventReceiver->isKeyPressed(KEY_F5) && step > 0)
             {
                 step -= 1.f;
+                yAngle--;
+                brushSize--;
             }
             else if (pEventReceiver->isKeyPressed(KEY_SPACE))
             {
@@ -587,6 +781,19 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
 
                 //arrow->setPosition(core::vector3df(x, pTerrainSceneNode->getHeight(x, z) + 20, z));
             }
+            
+            core::stringw windowCaption = "LTerrain Editor [";
+            windowCaption += pVideoDriver->getFPS();
+            if (pSceneManager->getSceneCollisionManager()->getCollisionPoint(ray, pTerrainSceneNodeSelector, pos, Tri, node))
+            {
+                windowCaption += "] Mouse position: X:";
+                windowCaption += pos.X;
+                windowCaption += " Y:";
+                windowCaption += pos.Y;
+                windowCaption += " Z:";
+                windowCaption += pos.Z;
+            }
+            pDevice->setWindowCaption(windowCaption.c_str());
 
             pVideoDriver->beginScene(true, true, video::SColor(50, 50, 50, 50));
             pSceneManager->drawAll();
@@ -595,7 +802,11 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
             //sprintf(c,"elevation step : %.0f units", step);
             //txt[1]->setText(core::stringw(c).c_str());
 
+            //drawCircleBrushBorder(pVideoDriver, pTerrainSceneNode, pTerrainSceneNode->getTerrainCenter(), brushSize, video::SColor(0, 255, 0, 0));
+            drawSquareBrushBorder(pVideoDriver, pTerrainSceneNode, pTerrainSceneNode->getTerrainCenter(), brushSize, yAngle, video::SColor(0, 255, 0, 0));
+            
             pGUIEnviroment->drawAll();
+            
             pVideoDriver->endScene();
 
             // End event process
@@ -604,7 +815,7 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
             pDevice->yield();
     }
 
-    pHeightmap->drop();
+    //pHeightmap->drop();
     pBrush->drop();
 
     pTerrainSceneNodeSelector->drop();
@@ -614,4 +825,3 @@ txt[1]->setOverrideColor(video::SColor(255,0,255,0));*/
 
     return 0;
 }
-
