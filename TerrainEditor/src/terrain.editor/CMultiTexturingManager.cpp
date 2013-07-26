@@ -1,4 +1,4 @@
-#include "CMultiTexturingManager.h"
+#include "../../headers/terrain.editor/CMultiTexturingManager.h"
 
 CMultiTexturingManager::CMultiTexturingManager(scene::ISceneManager* psmgr){
     //Assign all parameters

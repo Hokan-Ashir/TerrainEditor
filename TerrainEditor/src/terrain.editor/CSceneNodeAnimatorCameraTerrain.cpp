@@ -3,7 +3,7 @@
 
 // This is a special type of camera intended to work in a "glide over terrain" mode
 
-#include "CSceneNodeAnimatorCameraTerrain.h"
+#include "../../headers/terrain.editor/CSceneNodeAnimatorCameraTerrain.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
 #include "Keycodes.h"

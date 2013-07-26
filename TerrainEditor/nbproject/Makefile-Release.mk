@@ -14,9 +14,9 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=gcc-4.7
-CCC=g++-4.7
-CXX=g++-4.7
+CC=gcc
+CCC=g++
+CXX=g++
 FC=gfortran
 AS=as
 
@@ -35,11 +35,16 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/CMasterEventReceiver.o \
-	${OBJECTDIR}/CGUIMainMenu.o \
-	${OBJECTDIR}/_ext/584002442/CMultiTexturingManager.o \
-	${OBJECTDIR}/Main.o \
-	${OBJECTDIR}/CSceneNodeAnimatorCameraTerrain.o
+	${OBJECTDIR}/src/CEventReceiverManager.o \
+	${OBJECTDIR}/src/CGUIMainMenu.o \
+	${OBJECTDIR}/src/CGUIManager.o \
+	${OBJECTDIR}/src/CMainApplication.o \
+	${OBJECTDIR}/src/CScreenShotFactory.o \
+	${OBJECTDIR}/src/CTerrainEditor.o \
+	${OBJECTDIR}/src/Main.o \
+	${OBJECTDIR}/src/terrain.editor/CBrushManager.o \
+	${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o \
+	${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o
 
 
 # C Compiler Flags
@@ -66,32 +71,57 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/terraineditor: ../../Irrlicht/irrlich
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/terraineditor: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/terraineditor ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/terraineditor ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/CMasterEventReceiver.o: CMasterEventReceiver.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/CEventReceiverManager.o: src/CEventReceiverManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CMasterEventReceiver.o CMasterEventReceiver.cpp
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CEventReceiverManager.o src/CEventReceiverManager.cpp
 
-${OBJECTDIR}/CGUIMainMenu.o: CGUIMainMenu.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/CGUIMainMenu.o: src/CGUIMainMenu.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CGUIMainMenu.o CGUIMainMenu.cpp
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CGUIMainMenu.o src/CGUIMainMenu.cpp
 
-${OBJECTDIR}/_ext/584002442/CMultiTexturingManager.o: ../IrrlichtTest/CMultiTexturingManager.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/584002442
+${OBJECTDIR}/src/CGUIManager.o: src/CGUIManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/584002442/CMultiTexturingManager.o ../IrrlichtTest/CMultiTexturingManager.cpp
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CGUIManager.o src/CGUIManager.cpp
 
-${OBJECTDIR}/Main.o: Main.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/CMainApplication.o: src/CMainApplication.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Main.o Main.cpp
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CMainApplication.o src/CMainApplication.cpp
 
-${OBJECTDIR}/CSceneNodeAnimatorCameraTerrain.o: CSceneNodeAnimatorCameraTerrain.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/CScreenShotFactory.o: src/CScreenShotFactory.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CSceneNodeAnimatorCameraTerrain.o CSceneNodeAnimatorCameraTerrain.cpp
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CScreenShotFactory.o src/CScreenShotFactory.cpp
+
+${OBJECTDIR}/src/CTerrainEditor.o: src/CTerrainEditor.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CTerrainEditor.o src/CTerrainEditor.cpp
+
+${OBJECTDIR}/src/Main.o: src/Main.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Main.o src/Main.cpp
+
+${OBJECTDIR}/src/terrain.editor/CBrushManager.o: src/terrain.editor/CBrushManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CBrushManager.o src/terrain.editor/CBrushManager.cpp
+
+${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o: src/terrain.editor/CMultiTexturingManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o src/terrain.editor/CMultiTexturingManager.cpp
+
+${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o: src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp
 
 # Subprojects
 .build-subprojects:

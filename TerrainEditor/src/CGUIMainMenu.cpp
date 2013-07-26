@@ -1,4 +1,4 @@
-#include "CGUIMainMenu.h"
+#include "../headers/CGUIMainMenu.h"
 #include "IGUIContextMenu.h"
 #include "IVideoDriver.h"
 #include "IGUIToolbar.h"
