@@ -9,10 +9,19 @@
 
 namespace irr {
 
-    CMainApplication::CMainApplication(video::E_DRIVER_TYPE videoDriverType, bool fullScreen) {
-        pDevice = createDevice(videoDriverType, core::dimension2d<u32> (800, 600), 32, fullScreen, false, false);
+    /**
+     * Constructor
+     * Sets game data archives, create Irrlicht & application stuff, skydome
+     * also creates EventReceiverManager and fills it with class instances
+     * 
+     * @param videoDriverType       video driver type (OpenGL by default)
+     * @param fullScreen            enable full screen mode flag (false by default)
+     */
+    CMainApplication::CMainApplication(video::E_DRIVER_TYPE videoDriverType, bool fullScreenMode) {
+        pDevice = createDevice(videoDriverType, core::dimension2d<u32> (800, 600), 32, fullScreenMode, false, false);
         if (!pDevice)
             exit(0);
+        this->fullScreenMode = fullScreenMode;
 
         pVideoDriver = pDevice->getVideoDriver();
         pSceneManager = pDevice->getSceneManager();
@@ -30,9 +39,9 @@ namespace irr {
         pGUIEnviroment->getSkin()->setFont(font);
 
         pGUIManager = new CGUIManager(pDevice, pTerrainEditor);
-        
+
         pEventReceiverManager = new CEventReceiverManager();
-        pScreenShotFactory = new CScreenShotFactory(pDevice, "screen", 0);
+        pScreenShotFactory = new CScreenShotFactory(pDevice, "screenshot");
         pEventReceiverManager->addEventReceiver(SEventReceiver(pScreenShotFactory, "pScreenShotFactory", false));
         pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor, "pTerrainEditor", false));
         pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getBrushManager(), "pBrushManager", false));
@@ -41,15 +50,19 @@ namespace irr {
         pDevice->setEventReceiver(pEventReceiverManager);
     }
 
-    CMainApplication::CMainApplication(const CMainApplication& orig) {
-    }
-
+    /**
+     * Virtual destructor
+     * Clear all created stuff (terrain editor application class instances) & clear-&-drop device
+     */
     CMainApplication::~CMainApplication() {
         closeEverything();
         pDevice->closeDevice();
         pDevice->drop();
     }
 
+    /**
+     * Clear all created stuff: event receiver manager, GUI manager, screenshot factory, terrain editor classes instances
+     */
     void CMainApplication::closeEverything() {
         delete pEventReceiverManager;
         delete pGUIManager;
@@ -57,6 +70,12 @@ namespace irr {
         delete pTerrainEditor;
     }
 
+    /**
+     * Operates events correspondes to application itself (exit from application, for example)
+     * 
+     * @param event incomming event
+     * @return true if incomming event processed
+     */
     bool CMainApplication::OnEvent(const SEvent& event) {
         if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
             if (event.KeyInput.Key == KEY_ESCAPE) {
@@ -68,6 +87,9 @@ namespace irr {
         return false;
     }
 
+    /**
+     * Run main device loop & run all other drawing function from subclasses
+     */
     void CMainApplication::runDevice() {
         while (pDevice->run()) {
             if (pDevice->isWindowActive()) {
@@ -93,6 +115,24 @@ namespace irr {
                 pDevice->yield();
             }
         }
+    }
+
+    /**
+     * Getter
+     * 
+     * @return current full screen mode flag value
+     */
+    bool CMainApplication::getFullScreenMode() const {
+        return fullScreenMode;
+    }
+
+    /**
+     * Setter
+     * 
+     * @param fullScreenMode new boolean flag for full screen mode
+     */
+    void CMainApplication::setFullScreenMode(bool fullScreenMode) {
+        this->fullScreenMode = fullScreenMode;
     }
 
 } // end of namespace irr

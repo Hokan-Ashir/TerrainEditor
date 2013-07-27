@@ -12,6 +12,15 @@
 
 namespace irr {
 
+    /**
+     * Constructor
+     * Create terrain node itself, camera node (set GOT - Glide Over Terrain animator) 
+     * & initialize MultiTexturingManager so as BrushManager
+     * 
+     * @param pDevice pointer to IrrlichtDevice class instance
+     * @param heightMapName height map name which will be used to construct terrain
+     * @param terrainSceneNodeScaleFactor   terrain scale factor
+     */
     CTerrainEditor::CTerrainEditor(IrrlichtDevice* pDevice, core::stringw heightMapName, f32 terrainSceneNodeScaleFactor) : wireframeMode(false) {
         this->pVideoDriver = pDevice->getVideoDriver();
         this->pSceneManager = pDevice->getSceneManager();
@@ -91,18 +100,27 @@ namespace irr {
         pBrushManager = new CBrushManager(pVideoDriver, pTerrainSceneNode);
     }
 
-    CTerrainEditor::CTerrainEditor(const CTerrainEditor& orig) {
-    }
-
+    /**
+     * Virtual destructor
+     * Drops only terrain collision selector
+     */
     CTerrainEditor::~CTerrainEditor() {
         pTerrainSceneNodeSelector->drop();
     }
 
+    /**
+     * Draws everything that correnspondes to terrain (brushes, blended textures, shadows, lights etc.)
+     */
     void CTerrainEditor::drawAll() {
         pMultiTexturingManager->drawAll();
         pBrushManager->drawAll();
     }
 
+    /**
+     * Paints terrain node via CMultiTexturingManager, using brush from CBrushManage
+     * 
+     * @param clickPosition click position of mouse on screen
+     */
     void CTerrainEditor::textureTerrainWithCurrentBrush(const core::position2di clickPosition) {
         const core::line3df ray = pSceneManager->getSceneCollisionManager()->getRayFromScreenCoordinates(clickPosition, pCameraSceneNode);
         core::vector3df pos;
@@ -120,9 +138,15 @@ namespace irr {
             video::ITexture* Tex = first_pass->splat_texture; //pVideoDriver->getTexture("Data/textures/splat_1.tga");
             first_pass->splat_texture = textureBrush(x, z, Tex);
         }
-        
+
     }
 
+    /**
+     * Gets intersection position with terrain mesh by ray traced from user mouse click position
+     * 
+     * @param clickPosition mouse click position on the screen
+     * @return intersection position (WITHOUT terrain scale factor affected)
+     */
     core::vector3df CTerrainEditor::getIntersectionPositionWithTerrain(const core::position2di clickPosition) {
         const core::line3df ray = pSceneManager->getSceneCollisionManager()->getRayFromScreenCoordinates(clickPosition, pCameraSceneNode);
         core::vector3df pos;
@@ -142,11 +166,9 @@ namespace irr {
     }
 
     /**
-     * Save pTerrainSceneNode height map
-     *
-     * @param pVideoDriver		IVideoDriver pointer
-     * @param pTerrainSceneNode		ITerraiSceneNode pointer
-     * @param heightMapName	name of pTerrainSceneNode height map
+     * Saves terrain current height map
+     * 
+     * @param heightMapName file name of current height map
      */
     void CTerrainEditor::saveTerrainHeightMap(core::stringc heightMapName) {
         core::dimension2d<u32> dim(256, 256);
@@ -168,13 +190,11 @@ namespace irr {
         img->drop();
     }
 
-        /**
+    /**
      * Paint pTerrainSceneNode node with brush
      *
-     * @param pVideoDriver	IVideoDriver pointer
-     * @param pTerrainSceneNode	ITerrainSceneNode pointer to be textured
-     * @param x			center position of brush on x-axis
-     * @param z			center position of brush on z-axis
+     * @param vertexXCoordinate			center position of brush on X-axis
+     * @param vertexZCoordinate			center position of brush on Z-axis
      * @param texture	ITexture pointer which instance user to paint pTerrainSceneNode node
      * @return			pointer to result, painted texture
      */
@@ -204,6 +224,12 @@ namespace irr {
         return texture;
     }
 
+    /**
+     * Operates events affecting on terrain itself - changing wireframe view and other little stuff
+     * 
+     * @param event incomming event
+     * @return true if incomming event processed
+     */
     bool CTerrainEditor::OnEvent(const SEvent& event) {
         if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
             if (event.KeyInput.Key == KEY_KEY_W) {
@@ -220,20 +246,31 @@ namespace irr {
         return false;
     }
 
-    /*CMultiTexturingManager* CTerrainEditor::getMultiTexturingManager() const {
-        return pMultiTexturingManager;
-    }*/
-
+    /**
+     * Getter
+     * 
+     * @return current brush manager
+     */
     CBrushManager* CTerrainEditor::getBrushManager() const {
         return pBrushManager;
     }
 
-    scene::ITerrainSceneNode* CTerrainEditor::getTerrainSceneNode() const {
-        return pTerrainSceneNode;
-    }
-
+    /**
+     * Getter
+     * 
+     * @return  current camera scene node
+     */
     scene::ICameraSceneNode* CTerrainEditor::getCameraSceneNode() const {
         return pCameraSceneNode;
+    }
+
+    /**
+     * Getter
+     * 
+     * @return current terrain scene node itself
+     */
+    scene::ITerrainSceneNode* CTerrainEditor::getTerrainSceneNode() const {
+        return pTerrainSceneNode;
     }
 
 

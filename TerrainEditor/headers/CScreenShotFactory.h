@@ -14,17 +14,55 @@
 
 namespace irr
 {
+    /**
+     * Class-factory for screenshot creation, counting its number
+     * 
+     * inspired by Irrlicht tutorial [16]
+     */
     class CScreenShotFactory : public IEventReceiver {
     public:
-        CScreenShotFactory(IrrlichtDevice *device, const c8* templateName, scene::ISceneNode* node);
+        /**
+         * Constructor
+         * 
+         * @param pDevice        pointer to IrrlichtDevice
+         * @param templateName  file name templates
+         */
+        CScreenShotFactory(IrrlichtDevice* pDevice, const c8* templateName);
+        
+        /**
+         * Copy constructor (not implemented)
+         * 
+         * @param orig  reference to original class instance
+         */
         CScreenShotFactory(const CScreenShotFactory& orig) {};
+        
+        /**
+         * Virtual destructor (not implemented)
+         */
         virtual ~CScreenShotFactory() {};
+        
+        /**
+         * Operates events producing new screenshots (pressing F9 button)
+         * 
+         * @param event incomming event
+         * @return true if incomming event processed
+         */
         virtual bool OnEvent(const SEvent& event);
     private:
-        IrrlichtDevice* Device;
-        u32 Number;
-        core::stringc FilenameTemplate;
-        scene::ISceneNode* Node;
+        /**
+         * Pointer to IrrlichtDevice
+         */
+        IrrlichtDevice* pDevice;
+        
+        /**
+         * Number of previous screenshot
+         */
+        u32 screenShotNumber;
+        
+        /**
+         * Current screen shot file name template
+         */
+        core::stringw filenameTemplate;
     };
 } // end of namespace irr       
 

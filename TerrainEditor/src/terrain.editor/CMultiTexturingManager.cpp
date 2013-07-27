@@ -1,14 +1,14 @@
 #include "../../headers/terrain.editor/CMultiTexturingManager.h"
 
-CMultiTexturingManager::CMultiTexturingManager(scene::ISceneManager* psmgr){
+CMultiTexturingManager::CMultiTexturingManager(scene::ISceneManager* psmgr) {
     //Assign all parameters
     smgr = psmgr;
-    driver=psmgr->getVideoDriver();
+    driver = psmgr->getVideoDriver();
 
     ///GLSL Shader Code
     //Vertex Shader
     // TODO smth
-    const c8 *vertShader =  "void main(void)\
+    const c8 *vertShader = "void main(void)\
                             {\
                                 gl_TexCoord[0] = gl_MultiTexCoord0;\
                                 gl_TexCoord[1] = gl_MultiTexCoord1;\
@@ -39,23 +39,23 @@ CMultiTexturingManager::CMultiTexturingManager(scene::ISceneManager* psmgr){
             this, video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 }
 
-CMultiTexturingManager::~CMultiTexturingManager(){
+CMultiTexturingManager::~CMultiTexturingManager() {
     //Erase everything
-    for(u32 i=0; i<array_Nodes.size();i++){
-        while(!array_Nodes[i].array_Passes.empty()){
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        while (!array_Nodes[i].array_Passes.empty()) {
             array_Nodes[i].array_Passes.erase(0);
         }
     }
-    while(!array_Nodes.empty()){
+    while (!array_Nodes.empty()) {
         array_Nodes.erase(0);
     }
 }
 
-bool CMultiTexturingManager::addNode(scene::ISceneNode *node){
-    for(u32 i=0; i<array_Nodes.size();i++){
-       if(array_Nodes[i].Node == node){
-           return false;
-       }
+bool CMultiTexturingManager::addNode(scene::ISceneNode *node) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
+            return false;
+        }
     }
     SMultiTextureNode tmpNode;
     tmpNode.Node = node;
@@ -63,19 +63,19 @@ bool CMultiTexturingManager::addNode(scene::ISceneNode *node){
     return true;
 }
 
-bool CMultiTexturingManager::removeNode(scene::ISceneNode *node){
-    for(u32 i=0; i<array_Nodes.size();i++){
-       if(array_Nodes[i].Node == node){
-           array_Nodes.erase(i);
-           return true;
-       }
+bool CMultiTexturingManager::removeNode(scene::ISceneNode *node) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
+            array_Nodes.erase(i);
+            return true;
+        }
     }
     return false;
 }
 
-CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node){
-    for(u32 i=0; i<array_Nodes.size();i++){
-        if(array_Nodes[i].Node == node){
+CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
             STexturePass *pass = new STexturePass();
             pass->red_texture = node->getMaterial(0).getTexture(0);
             pass->green_texture = node->getMaterial(0).getTexture(1);
@@ -89,9 +89,9 @@ CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISc
     return 0;
 }
 
-CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node, video::ITexture *splat, video::ITexture *red, video::ITexture *green, video::ITexture *blue){
-    for(u32 i=0; i<array_Nodes.size();i++){
-        if(array_Nodes[i].Node == node){
+CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node, video::ITexture *splat, video::ITexture *red, video::ITexture *green, video::ITexture *blue) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
             STexturePass *pass = new STexturePass();
             pass->red_texture = red;
             pass->green_texture = green;
@@ -105,9 +105,9 @@ CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISc
     return 0;
 }
 
-CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node, STexturePass *pass){
-    for(u32 i=0; i<array_Nodes.size();i++){
-        if(array_Nodes[i].Node == node){
+CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISceneNode *node, STexturePass *pass) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
             STexturePass *Pass = pass;
 
             array_Nodes[i].array_Passes.push_back(pass);
@@ -117,94 +117,89 @@ CMultiTexturingManager::STexturePass *CMultiTexturingManager::addPass(scene::ISc
     return 0;
 }
 
-bool CMultiTexturingManager::removePass(scene::ISceneNode *node, u32 layer){
-    for(u32 i=0; i<array_Nodes.size();i++){
-        if(array_Nodes[i].Node == node){
-            for(u32 j = 0; j<array_Nodes[i].array_Passes.size();j++){
-                if(j==layer)
+bool CMultiTexturingManager::removePass(scene::ISceneNode *node, u32 layer) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
+            for (u32 j = 0; j < array_Nodes[i].array_Passes.size(); j++) {
+                if (j == layer)
                     array_Nodes[i].array_Passes.erase(j);
-                    return true;
+                return true;
             }
         }
     }
     return false;
 }
 
-bool CMultiTexturingManager::removePass(scene::ISceneNode *node, STexturePass *pass){
-    for(u32 i=0; i<array_Nodes.size();i++){
-        if(array_Nodes[i].Node == node){
-            for(u32 j = 0; j<array_Nodes[i].array_Passes.size();j++){
-                if(array_Nodes[i].array_Passes[j]==pass)
+bool CMultiTexturingManager::removePass(scene::ISceneNode *node, STexturePass *pass) {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
+        if (array_Nodes[i].Node == node) {
+            for (u32 j = 0; j < array_Nodes[i].array_Passes.size(); j++) {
+                if (array_Nodes[i].array_Passes[j] == pass)
                     array_Nodes[i].array_Passes.erase(j);
-                    return true;
+                return true;
             }
         }
     }
     return false;
 }
 
+void CMultiTexturingManager::drawAll() {
 
-void CMultiTexturingManager::drawAll(){
-
-   for(u32 i=0; i<array_Nodes.size();i++)
-   {
+    for (u32 i = 0; i < array_Nodes.size(); i++) {
         //I learned this meshbuffer trick from Viz_Fuerte's "Simple but useful projects"
-        if(!smgr->isCulled(array_Nodes[i].Node))
-        {
+        if (!smgr->isCulled(array_Nodes[i].Node)) {
             array_Nodes[i].Node->setVisible(true);
             array_Nodes[i].Node->OnRegisterSceneNode();
             array_Nodes[i].Node->updateAbsolutePosition();
             array_Nodes[i].Node->setVisible(false);
             //Reset the transformation
-            if(array_Nodes[i].Node->getType()==scene::ESNT_TERRAIN)
-                driver->setTransform(video::ETS_WORLD,core::IdentityMatrix);
+            if (array_Nodes[i].Node->getType() == scene::ESNT_TERRAIN)
+                driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
             else
-                driver->setTransform(video::ETS_WORLD,array_Nodes[i].Node->getAbsoluteTransformation());
+                driver->setTransform(video::ETS_WORLD, array_Nodes[i].Node->getAbsoluteTransformation());
 
-            for(u32 j=0; j<array_Nodes[i].array_Passes.size();j++){
-                array_Nodes[i].Node->setMaterialTexture(0,array_Nodes[i].array_Passes[j]->splat_texture);
-                array_Nodes[i].Node->setMaterialTexture(1,array_Nodes[i].array_Passes[j]->red_texture);
-                array_Nodes[i].Node->setMaterialTexture(2,array_Nodes[i].array_Passes[j]->green_texture);
-                array_Nodes[i].Node->setMaterialTexture(3,array_Nodes[i].array_Passes[j]->blue_texture);
+            for (u32 j = 0; j < array_Nodes[i].array_Passes.size(); j++) {
+                array_Nodes[i].Node->setMaterialTexture(0, array_Nodes[i].array_Passes[j]->splat_texture);
+                array_Nodes[i].Node->setMaterialTexture(1, array_Nodes[i].array_Passes[j]->red_texture);
+                array_Nodes[i].Node->setMaterialTexture(2, array_Nodes[i].array_Passes[j]->green_texture);
+                array_Nodes[i].Node->setMaterialTexture(3, array_Nodes[i].array_Passes[j]->blue_texture);
 
-                if(array_Nodes[i].Node->getType()==scene::ESNT_TERRAIN){
+                if (array_Nodes[i].Node->getType() == scene::ESNT_TERRAIN) {
                     video::SMaterial material = array_Nodes[i].Node->getMaterial(0);
                     material.MaterialType = (video::E_MATERIAL_TYPE)shaderMaterial;
                     material.MaterialTypeParam = video::pack_textureBlendFunc(video::EBF_DST_COLOR, video::EBF_ONE);
 
                     driver->setMaterial(material);
                     driver->drawMeshBuffer(((scene::ITerrainSceneNode*)array_Nodes[i].Node)->getRenderBuffer());
-                }else{
-                    for(u32 k=0; k<array_Nodes[i].Node->getMaterialCount(); ++k)
-                    {
+                } else {
+                    for (u32 k = 0; k < array_Nodes[i].Node->getMaterialCount(); ++k) {
                         video::SMaterial material = array_Nodes[i].Node->getMaterial(k);
                         material.MaterialType = (video::E_MATERIAL_TYPE)shaderMaterial;
-                        material.MaterialTypeParam = video::pack_textureBlendFunc(video::EBF_DST_COLOR,video::EBF_ONE);
+                        material.MaterialTypeParam = video::pack_textureBlendFunc(video::EBF_DST_COLOR, video::EBF_ONE);
 
                         driver->setMaterial(material);
-                        switch(array_Nodes[i].Node->getType()){
-                        case scene::ESNT_ANIMATED_MESH:
-                            driver->drawMeshBuffer(((scene::IAnimatedMeshSceneNode*)array_Nodes[i].Node)->getMesh()->getMeshBuffer(k));
-                            break;
-                        default:
-                            driver->drawMeshBuffer(((scene::IMeshSceneNode*)array_Nodes[i].Node)->getMesh()->getMeshBuffer(k));
-                            break;
+                        switch (array_Nodes[i].Node->getType()) {
+                            case scene::ESNT_ANIMATED_MESH:
+                                driver->drawMeshBuffer(((scene::IAnimatedMeshSceneNode*)array_Nodes[i].Node)->getMesh()->getMeshBuffer(k));
+                                break;
+                            default:
+                                driver->drawMeshBuffer(((scene::IMeshSceneNode*)array_Nodes[i].Node)->getMesh()->getMeshBuffer(k));
+                                break;
                         };
                     }
                 }
-         }
+            }
         }
-   }
+    }
 }
 
-void CMultiTexturingManager::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
-{
+void CMultiTexturingManager::OnSetConstants(video::IMaterialRendererServices* services, s32 userData) {
     s32 layer0 = 0;
     s32 layer1 = 1;
     s32 layer2 = 2;
     s32 layer3 = 3;
-    services->setPixelShaderConstant("splatMap", &layer0,1);
-    services->setPixelShaderConstant("layer_red", &layer1,1);
-    services->setPixelShaderConstant("layer_green", &layer2,1);
-    services->setPixelShaderConstant("layer_blue", &layer3,1);
+    services->setPixelShaderConstant("splatMap", &layer0, 1);
+    services->setPixelShaderConstant("layer_red", &layer1, 1);
+    services->setPixelShaderConstant("layer_green", &layer2, 1);
+    services->setPixelShaderConstant("layer_blue", &layer3, 1);
 }

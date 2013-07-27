@@ -9,31 +9,37 @@
 
 namespace irr {
 
-    CScreenShotFactory::CScreenShotFactory(IrrlichtDevice *device, const c8 * templateName, scene::ISceneNode* node)
-    : Device(device), Number(0), FilenameTemplate(templateName), Node(node) {
-        FilenameTemplate.replace('/', '_');
-        FilenameTemplate.replace('\\', '_');
+    /**
+     * Constructor
+     * 
+     * @param pDevice        pointer to IrrlichtDevice
+     * @param templateName  file name templates
+     */
+    CScreenShotFactory::CScreenShotFactory(IrrlichtDevice* pDevice, const c8* templateName)
+    : pDevice(pDevice), screenShotNumber(0), filenameTemplate(templateName) {
+        filenameTemplate.replace('/', '_');
+        filenameTemplate.replace('\\', '_');
     }
 
+    /**
+     * Operates events producing new screenshots (pressing F9 button)
+     * 
+     * @param event incomming event
+     * @return true if incomming event processed
+     */
     bool CScreenShotFactory::OnEvent(const SEvent& event) {
         // check if user presses the key print screen
         if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
             if (event.KeyInput.Key == KEY_F9) {
-                video::IImage* image = Device->getVideoDriver()->createScreenShot();
+                video::IImage* image = pDevice->getVideoDriver()->createScreenShot();
                 if (image) {
-                    c8 buf[256];
-                    snprintf(buf, 256, "%s_shot%04d.jpg",
-                            FilenameTemplate.c_str(),
-                            ++Number);
-                    Device->getVideoDriver()->writeImageToFile(image, buf, 85);
+                    core::stringw screenShotFileName = filenameTemplate.c_str();
+                    screenShotFileName += ++screenShotNumber;
+                    screenShotFileName += ".jpg";
+                    pDevice->getVideoDriver()->writeImageToFile(image, screenShotFileName, 85);
                     image->drop();
                 }
-            } /*else if (event.KeyInput.Key == KEY_F8) {
-                if (Node->isDebugDataVisible())
-                    Node->setDebugDataVisible(scene::EDS_OFF);
-                else
-                    Node->setDebugDataVisible(scene::EDS_BBOX_ALL);
-            }*/
+            }
         }
         return false;
     }

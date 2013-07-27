@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/CScreenShotFactory.o \
 	${OBJECTDIR}/src/CTerrainEditor.o \
 	${OBJECTDIR}/src/Main.o \
+	${OBJECTDIR}/src/TextureTools.o \
 	${OBJECTDIR}/src/terrain.editor/CBrushManager.o \
 	${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o \
 	${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o
@@ -107,6 +108,11 @@ ${OBJECTDIR}/src/Main.o: src/Main.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Main.o src/Main.cpp
+
+${OBJECTDIR}/src/TextureTools.o: src/TextureTools.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/TextureTools.o src/TextureTools.cpp
 
 ${OBJECTDIR}/src/terrain.editor/CBrushManager.o: src/terrain.editor/CBrushManager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor

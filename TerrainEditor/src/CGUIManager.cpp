@@ -11,19 +11,23 @@
 
 namespace irr {
 
+    /**
+     * Constructor
+     * 
+     * @param pDevice pointer to IrrlichtDevice class instance
+     * @param pTerrainEditor        pointer to CTerrainEditor class instance
+     */
     CGUIManager::CGUIManager(IrrlichtDevice* pDevice, CTerrainEditor* pTerrainEditor) : editMode(false) {
         this->pDevice = pDevice;
         this->pTerrainEditor = pTerrainEditor;
 
-        gui::CGUIMainMenu* MainMenu = new gui::CGUIMainMenu(pDevice->getGUIEnvironment());
+        // creates GUI itself
+        gui::CGUIMainMenu mainMenu = gui::CGUIMainMenu(pDevice->getGUIEnvironment());
     }
 
-    CGUIManager::CGUIManager(const CGUIManager& orig) {
-    }
-
-    CGUIManager::~CGUIManager() {
-    }
-
+    /**
+     * Resets all affected GUI elements (must be called every frame, before any event)
+     */
     void CGUIManager::resetAllGUIElements() {
         // Set all gui elements to false
         elementStatus[gui::EGET_ELEMENT_FOCUS_LOST] = elementStatus[gui::EGET_ELEMENT_FOCUSED] =
@@ -36,10 +40,17 @@ namespace irr {
                 elementStatus[gui::EGET_MESSAGEBOX_OK] = elementStatus[gui::EGET_MESSAGEBOX_CANCEL] =
                 elementStatus[gui::EGET_EDITBOX_ENTER] = elementStatus[gui::EGET_TAB_CHANGED] =
                 elementStatus[gui::EGET_MENU_ITEM_SELECTED] = elementStatus[gui::EGET_COMBO_BOX_CHANGED] =
-                elementStatus[gui::EGET_SPINBOX_CHANGED] = FALSE;
+                elementStatus[gui::EGET_SPINBOX_CHANGED] = false;
     }
 
+    /**
+     * Operates events affecting on GUI - pressing buttons, selecting elements
+     * 
+     * @param event incomming event
+     * @return true if incomming event processed
+     */
     bool CGUIManager::OnEvent(const SEvent& event) {
+        // parsing GUI event
         if (event.EventType == EET_GUI_EVENT) {
             generalCallerID = event.GUIEvent.Caller->getID();
 
@@ -64,24 +75,23 @@ namespace irr {
                 case gui::EGET_TAB_CHANGED:
                 case gui::EGET_COMBO_BOX_CHANGED:
                 case gui::EGET_SPINBOX_CHANGED:
-                    elementStatus[event.GUIEvent.EventType] = TRUE;
+                    elementStatus[event.GUIEvent.EventType] = true;
 
                     break;
 
                 case gui::EGET_MENU_ITEM_SELECTED:
-                    elementStatus[gui::EGET_MENU_ITEM_SELECTED] = TRUE;
-                    menu = (gui::IGUIContextMenu*)event.GUIEvent.Caller;
-                    menuItemSelectedID = menu->getItemCommandId(menu->getSelectedItem());
+                    elementStatus[gui::EGET_MENU_ITEM_SELECTED] = true;
+                    pGUIContextMenu = (gui::IGUIContextMenu*)event.GUIEvent.Caller;
+                    menuItemSelectedID = pGUIContextMenu->getItemCommandId(pGUIContextMenu->getSelectedItem());
                     break;
             }
         }
 
         if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_SAVE_SCENE
-                && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED))
+                && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
+            // save current terrain heightmap
             pTerrainEditor->saveTerrainHeightMap("heightmap_");
-
-            //
-        else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
+        } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
                 && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
             // Turn on/off lift/down-edit mode
             editMode = !editMode;
@@ -92,37 +102,45 @@ namespace irr {
             GOTCameraAnimator->setMouseActive(!GOTCameraAnimator->getMouseActive());
         }
 
-        // move the arrow to the nearest vertex ...
         if ((event.MouseInput.isLeftPressed() || event.MouseInput.isRightPressed()) && editMode) {
+            // paint terrain with current brush if any mouse button pressed and editMode active
             const core::position2di clickPosition = pDevice->getCursorControl()->getPosition();
             pTerrainEditor->textureTerrainWithCurrentBrush(clickPosition);
         }
         return false;
     }
 
+    /**
+     * Gets flag of current activated GUI element
+     * 
+     * @param GUI element type which has been activated
+     * @return true if active
+     */
     bool CGUIManager::getEventCallerByElement(gui::EGUI_EVENT_TYPE guiEventType) {
-        if (elementStatus[guiEventType] == TRUE)
-            return true;
-
-        return false;
-        //return elementStatus[guiEventType];
+        return elementStatus[guiEventType];
     }
 
-    // This function will be used to get the ID of a gui element.
-    // This is a general function for getting the ID.
-    // It works for a lot of gui events but not all.
-    // Like getting the ID of the context menu wont work with this function
-    // Instead, use this function: getEventCallerOfMenuByID()
-
+    /**
+     * This function will be used to get the ID of a gui element.
+     * This is a general function for getting the ID.
+     * It works for a lot of gui events but not all.
+     * Like getting the ID of the context menu wont work with this function
+     * Instead, use this function: getEventCallerOfMenuByID()
+     * 
+     * @return ID of GUI element
+     */
     s32 CGUIManager::getEventCallerByID() {
         return generalCallerID;
     }
 
-    // meant for event: EGET_MENU_ITEM_SELECTED
-    // because IGUIContextMenu does not have the function: getID()
-    // in this line: event.GUIEvent.Caller->getID()
-    // So I had to make a custome one for the EGET_MENU_ITEM_SELECTED events.
-
+    /**
+     * meant for event: EGET_MENU_ITEM_SELECTED
+     * because IGUIContextMenu does not have the function: getID()
+     * in this line: event.GUIEvent.Caller->getID()
+     * So I had to make a custome one for the EGET_MENU_ITEM_SELECTED events.
+     * 
+     * @return ID of GUI menu element
+     */
     s32 CGUIManager::getEventCallerOfMenuByID() {
         return menuItemSelectedID;
     }

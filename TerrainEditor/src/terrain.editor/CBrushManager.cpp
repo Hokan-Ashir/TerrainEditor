@@ -9,54 +9,43 @@
 
 namespace irr {
 
-    CBrushManager::CBrushManager(video::IVideoDriver* pVideoDriver, scene::ITerrainSceneNode* pTerrainSceneNode) : 
-    brushYAngle(0.0f), brushSize(100.0f) {
+    /**
+     * Constructor
+     * 
+     * @param pVideoDriver  pointer to IVideoDriver interface
+     * @param pTerrainSceneNode     pointer to ITerrainSceneNode interface; over which brushes draws
+     */
+    CBrushManager::CBrushManager(video::IVideoDriver* pVideoDriver, scene::ITerrainSceneNode* pTerrainSceneNode) :
+    brushYAngle(0.0f), brushRadius(100.0f), borderColour(video::SColor(0, 255, 0, 0)) {
         this->pVideoDriver = pVideoDriver;
         this->pTerrainSceneNode = pTerrainSceneNode;
         pBrush = this->pVideoDriver->createImageFromFile("brush.png");
     }
 
-    CBrushManager::CBrushManager(const CBrushManager& orig) {
-    }
-
+    /**
+     * Virtual destuctor
+     * drops only loaded image of brush
+     */
     CBrushManager::~CBrushManager() {
         pBrush->drop();
     }
-    
-    bool CBrushManager::OnEvent(const SEvent& event) {
-        if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
-            if (event.KeyInput.Key == KEY_F4) {
-                brushYAngle++;
-                brushSize++;
-            } else if (event.KeyInput.Key == KEY_F5) {
-                brushYAngle--;
-                brushSize--;
-            }
-        }
-        return false;
-    }
-    
+
+    /**
+     * Draws everything - brush, its border, any other suff
+     */
     void CBrushManager::drawAll() {
-        drawSquareBrushBorder(pTerrainSceneNode->getTerrainCenter(), brushSize, brushYAngle, video::SColor(0, 255, 0, 0));
+        drawSquareBrushBorder(pTerrainSceneNode->getTerrainCenter());
     }
 
     // TODO write rotation
     // optimum step = terrain grid cell width; how get this?
 
     /**
-     * paints square brush border that lay on terrain
+     * Draws square border over terrain node
      * 
-     * @param pVideoDriver          pointer to IVideoDriver instance
-     * @param pTerrainSceneNode     pointer to ITerrainSceneNode instance
-     * @param brushCenter           brush center point
-     * @param brushRadius           brush radius
-     * @param yAxisRotationAngle    angle rotation around y-axis, for rotation
-     * @param borderColour          brush border colour
+     * @param brushCenter   coordinates of brush center
      */
-    void CBrushManager::drawSquareBrushBorder(core::vector3df brushCenter,
-            f32 brushRadius,
-            f32 yAxisRotationAngle,
-            video::SColor borderColour) {
+    void CBrushManager::drawSquareBrushBorder(core::vector3df brushCenter) {
         // set steps:
         f32 hoverStep = 0.1f; // because border must hover alittle over terrain, not stuck in it
         f32 step = 17.0f; // vertices space step; optimum = terain grid cell width
@@ -174,17 +163,11 @@ namespace irr {
     // TODO rotation (not need in circle, but use for brush direction)
 
     /**
-     * paints circle brush border that lay on terrain
+     * Draws circle border over terrain node
      * 
-     * @param pVideoDriver          pointer to IVideoDriver instance
-     * @param pTerrainSceneNode     pointer to ITerrainSceneNode instance
-     * @param brushCenter           brush center point
-     * @param brushRadius           brush radius
-     * @param borderColour           brush border colour
+     * @param brushCenter   coordinates of brush center
      */
-    void CBrushManager::drawCircleBrushBorder(core::vector3df brushCenter,
-            f32 brushRadius,
-            video::SColor borderColour) {
+    void CBrushManager::drawCircleBrushBorder(core::vector3df brushCenter) {
         // set steps:
         f32 hoverStep = 0.1f; // because border must hover alittle over terrain, not stuck in it
         f32 step = 0.1f; // vertices space step
@@ -237,23 +220,86 @@ namespace irr {
         // restore default material to video driver
         pVideoDriver->setMaterial(video::SMaterial());
     }
-    
-    f32 CBrushManager::getBrushSize() const {
-        return brushSize;
+
+    /**
+     * Operates events affecting on brush - changing parameters, drawing etc.
+     * increase/decrease brush angle around Y-axis and brush radius when user presses F4 & F5 respectively
+     * 
+     * @param event incomming event
+     * @return true if incomming event processed
+     */
+    bool CBrushManager::OnEvent(const SEvent& event) {
+        if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
+            if (event.KeyInput.Key == KEY_F4) {
+                brushYAngle++;
+                brushRadius++;
+            } else if (event.KeyInput.Key == KEY_F5) {
+                brushYAngle--;
+                brushRadius--;
+            }
+        }
+        return false;
     }
-    
+
+    /**
+     * Getter
+     * 
+     * @return current brush angle around Y-axis
+     */
     f32 CBrushManager::getBrushYAngle() const {
         return brushYAngle;
     }
-    
-    void CBrushManager::setBrushSize(f32 brushSize) {
-        this->brushSize = brushSize;
-    }
-    
+
+    /**
+     * Setter
+     * 
+     * @param brushYAngle new brush angle aroung Y-axis
+     */
     void CBrushManager::setBrushYAngle(f32 brushYAngle) {
         this->brushYAngle = brushYAngle;
     }
-    
+
+    /**
+     * Getter
+     * 
+     * @return current brush radius
+     */
+    f32 CBrushManager::getBrushRadius() const {
+        return brushRadius;
+    }
+
+    /**
+     * Setter
+     * 
+     * @param brushRadius new brush radius
+     */
+    void CBrushManager::setBrushRadius(f32 brushRadius) {
+        this->brushRadius = brushRadius;
+    }
+
+    /**
+     * Setter
+     * 
+     * @param borderColour new brush border colour
+     */
+    void CBrushManager::setBrushBorderColour(video::SColor borderColour) {
+        this->borderColour = borderColour;
+    }
+
+    /**
+     * Getter
+     * 
+     * @return current brush border colour
+     */
+    video::SColor CBrushManager::getBrushBorderColour() const {
+        return borderColour;
+    }
+
+    /**
+     * Getter
+     * 
+     * @return pointer to IImage interface representing current brush
+     */
     video::IImage* CBrushManager::getCurrentBrush() const {
         return pBrush;
     }
