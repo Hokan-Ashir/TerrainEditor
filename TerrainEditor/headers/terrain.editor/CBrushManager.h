@@ -95,11 +95,32 @@ namespace irr {
         void setBrushRadius(f32 brushRadius);
         
         /**
+         * Getter
+         * 
+         * @return current brush maximum radius
+         */
+        f32 getBrushMaximumRadius() const;
+        
+        /**
          * Setter
          * 
-         * @param borderColour new brush border colour
+         * @param brushMaximumRadius new brush maximum radius
          */
-        void setBrushBorderColour(video::SColor borderColour);
+        void setBrushMaximumRadius(f32 brushMaximumRadius);
+        
+        /**
+         * Getter
+         * 
+         * @return current brush minimum radius
+         */
+        f32 getBrushMinimumRadius() const;
+        
+        /**
+         * Setter
+         * 
+         * @param brushMinimumRadius new brush minimum radius
+         */
+        void setBrushMinimumRadius(f32 brushMinimumRadius);
         
         /**
          * Getter
@@ -109,12 +130,25 @@ namespace irr {
         video::SColor getBrushBorderColour() const;
         
         /**
+         * Setter
+         * 
+         * @param borderColour new brush border colour
+         */
+        void setBrushBorderColour(video::SColor borderColour);         
+        
+        /**
          * Getter
          * 
          * @return pointer to IImage interface representing current brush
          */
         video:: IImage* getCurrentBrush() const;
     private:
+        
+        bool isLCtrlButtonPressed;
+        
+        bool isLAltButtonPressed;
+        
+        void outOfTerrainPerimeterCheck(f32* x, f32* z);
         
         /**
          * Pointer to IImage interface representing current brush
@@ -137,9 +171,19 @@ namespace irr {
         f32 brushYAngle;
         
         /**
-         * Current brush border colour
+         * Current brush radius
          */
-        f32 brushRadius;
+        f32 brushRadius;       
+        
+        /**
+         * Current brush maximum radius
+         */
+        f32 brushMaximumRadius;
+        
+        /**
+         * Current brush minimum radius
+         */
+        f32 brushMinimumRadius;
         
         /**
          * Current brush border colour

@@ -96,12 +96,7 @@ namespace irr {
         /**
          * Pointer to IrrlichtDevice class instance
          */
-        IrrlichtDevice* pDevice;
-        
-        /**
-         * Editing mode flag; If active it is possible to raise verticies & paint terrain with brushes
-         */
-        bool editMode;
+        IrrlichtDevice* pDevice;       
         
         /**
          * Array of GUI elements statuses

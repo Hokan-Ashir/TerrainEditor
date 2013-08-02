@@ -45,7 +45,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/TextureTools.o \
 	${OBJECTDIR}/src/terrain.editor/CBrushManager.o \
 	${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o \
-	${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o
+	${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o \
+	${OBJECTDIR}/src/terrain.editor/decal.system/CBatchingMesh.o \
+	${OBJECTDIR}/src/terrain.editor/decal.system/DecalManager.o \
+	${OBJECTDIR}/src/terrain.editor/decal.system/DecalSceneNode.o
 
 
 # C Compiler Flags
@@ -128,6 +131,21 @@ ${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o: src/terrain.e
 	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp
+
+${OBJECTDIR}/src/terrain.editor/decal.system/CBatchingMesh.o: src/terrain.editor/decal.system/CBatchingMesh.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor/decal.system
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/decal.system/CBatchingMesh.o src/terrain.editor/decal.system/CBatchingMesh.cpp
+
+${OBJECTDIR}/src/terrain.editor/decal.system/DecalManager.o: src/terrain.editor/decal.system/DecalManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor/decal.system
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/decal.system/DecalManager.o src/terrain.editor/decal.system/DecalManager.cpp
+
+${OBJECTDIR}/src/terrain.editor/decal.system/DecalSceneNode.o: src/terrain.editor/decal.system/DecalSceneNode.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor/decal.system
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/decal.system/DecalSceneNode.o src/terrain.editor/decal.system/DecalSceneNode.cpp
 
 # Subprojects
 .build-subprojects:

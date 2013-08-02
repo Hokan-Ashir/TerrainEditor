@@ -42,10 +42,11 @@ namespace irr {
 
         pEventReceiverManager = new CEventReceiverManager();
         pScreenShotFactory = new CScreenShotFactory(pDevice, "screenshot");
-        pEventReceiverManager->addEventReceiver(SEventReceiver(pScreenShotFactory, "pScreenShotFactory", false));
-        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor, "pTerrainEditor", false));
-        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getBrushManager(), "pBrushManager", false));
-        pEventReceiverManager->addEventReceiver(SEventReceiver(pGUIManager, "pGUIManager", false));
+        //pEventReceiverManager->addEventReceiver(SEventReceiver(pScreenShotFactory, "pScreenShotFactory", false));
+        //pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor, "pTerrainEditor", false));
+        //pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getBrushManager(), "pBrushManager", false));
+        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getDecalManager(), "pDecalManager", true));
+        //pEventReceiverManager->addEventReceiver(SEventReceiver(pGUIManager, "pGUIManager", false));
         pEventReceiverManager->addEventReceiver(SEventReceiver(this, "pMainApplication", false));
         pDevice->setEventReceiver(pEventReceiverManager);
     }

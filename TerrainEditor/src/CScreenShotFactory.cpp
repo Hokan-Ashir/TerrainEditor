@@ -30,14 +30,16 @@ namespace irr {
     bool CScreenShotFactory::OnEvent(const SEvent& event) {
         // check if user presses the key print screen
         if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
+            // using F9 button, because *nix-systems like to call its own screen shot event handler, so this
+            // application loses focus & get no event
             if (event.KeyInput.Key == KEY_F9) {
-                video::IImage* image = pDevice->getVideoDriver()->createScreenShot();
-                if (image) {
+                video::IImage* screenShotImage = pDevice->getVideoDriver()->createScreenShot();
+                if (screenShotImage) {
                     core::stringw screenShotFileName = filenameTemplate.c_str();
                     screenShotFileName += ++screenShotNumber;
                     screenShotFileName += ".jpg";
-                    pDevice->getVideoDriver()->writeImageToFile(image, screenShotFileName, 85);
-                    image->drop();
+                    pDevice->getVideoDriver()->writeImageToFile(screenShotImage, screenShotFileName, 85);
+                    screenShotImage->drop();
                 }
             }
         }

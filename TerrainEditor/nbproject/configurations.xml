@@ -8,6 +8,13 @@
         <logicalFolder name="terrain.editor"
                        displayName="terrain.editor"
                        projectFiles="true">
+          <logicalFolder name="decal.system"
+                         displayName="decal.system"
+                         projectFiles="true">
+            <itemPath>src/terrain.editor/decal.system/CBatchingMesh.cpp</itemPath>
+            <itemPath>src/terrain.editor/decal.system/DecalManager.cpp</itemPath>
+            <itemPath>src/terrain.editor/decal.system/DecalSceneNode.cpp</itemPath>
+          </logicalFolder>
           <itemPath>src/terrain.editor/CBrushManager.cpp</itemPath>
           <itemPath>src/terrain.editor/CMultiTexturingManager.cpp</itemPath>
           <itemPath>src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp</itemPath>
@@ -29,6 +36,13 @@
         <logicalFolder name="terrain.editor"
                        displayName="terrain.editor"
                        projectFiles="true">
+          <logicalFolder name="decal.system"
+                         displayName="decal.system"
+                         projectFiles="true">
+            <itemPath>headers/terrain.editor/decal.system/CBatchingMesh.h</itemPath>
+            <itemPath>headers/terrain.editor/decal.system/DecalManager.h</itemPath>
+            <itemPath>headers/terrain.editor/decal.system/DecalSceneNode.h</itemPath>
+          </logicalFolder>
           <itemPath>headers/terrain.editor/CBrushManager.h</itemPath>
           <itemPath>headers/terrain.editor/CMultiTexturingManager.h</itemPath>
           <itemPath>headers/terrain.editor/CSceneNodeAnimatorCameraTerrain.h</itemPath>
@@ -115,6 +129,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/decal.system/CBatchingMesh.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/decal.system/DecalManager.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/decal.system/DecalSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="src/CEventReceiverManager.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CGUIMainMenu.cpp" ex="false" tool="1" flavor2="0">
@@ -144,6 +173,21 @@
             flavor2="0">
       </item>
       <item path="src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/CBatchingMesh.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/DecalManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/DecalSceneNode.cpp"
             ex="false"
             tool="1"
             flavor2="0">
@@ -210,6 +254,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/decal.system/CBatchingMesh.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/decal.system/DecalManager.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/decal.system/DecalSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="src/CEventReceiverManager.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CGUIMainMenu.cpp" ex="false" tool="1" flavor2="0">
@@ -239,6 +298,21 @@
             flavor2="0">
       </item>
       <item path="src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/CBatchingMesh.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/DecalManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/decal.system/DecalSceneNode.cpp"
             ex="false"
             tool="1"
             flavor2="0">

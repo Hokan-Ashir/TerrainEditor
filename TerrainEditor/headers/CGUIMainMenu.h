@@ -22,6 +22,7 @@ namespace irr {
             GUI_ID_LOAD_AS_OCTREE,
 
             GUI_ID_BUTTON_SAVE_SCENE,
+            GUI_ID_BUTTON_PAINT,
             GUI_ID_BUTTON_LIFT_DOWN,
 
             GUI_ID_SKY_BOX_VISIBLE,

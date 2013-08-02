@@ -13,6 +13,7 @@
 #include <ISceneManager.h>
 #include "terrain.editor/CMultiTexturingManager.h"
 #include "terrain.editor/CBrushManager.h"
+#include "terrain.editor/decal.system/DecalManager.h"
 
 namespace irr {
 
@@ -49,7 +50,15 @@ namespace irr {
          * 
          * @param clickPosition click position of mouse on screen
          */
-        void textureTerrainWithCurrentBrush(const core::position2di clickPosition);
+        void textureTerrainWithCurrentBrush(const core::vector3df intersectionPosition);
+        
+        /**
+         * Gets intersection position with terrain mesh by ray traced from user mouse click position
+         * 
+         * @param clickPosition mouse click position on the screen
+         * @return intersection position (WITHOUT terrain scale factor affected)
+         */
+        core::vector3df* getIntersectionPositionWithTerrain(const core::position2di clickPosition);
 
         /**
          * Saves terrain current height map
@@ -91,24 +100,55 @@ namespace irr {
          * @return current terrain scene node itself
          */
         scene::ITerrainSceneNode* getTerrainSceneNode() const;
+        
+        DecalManager* getDecalManager() const;
+        
+        /**
+         * Getter
+         * 
+         * @return current terrain scale factor
+         */
+        f32 getTerrainScaleFactor() const;
+        
+        /**
+         * Setter
+         * 
+         * @param terrainScaleFactor new terrain scale factor
+         */
+        void setTerrainScaleFactor(f32 terrainScaleFactor);
+        
+        /**
+         * Getter
+         * 
+         * @return current edit mode value
+         */
+        bool getEditMode() const;
+
+        /**
+         * Setter
+         * 
+         * @param editMode new value of edit mode flag
+         */
+        void setEditMode(bool editMode);
     private:
+        f32 size;
+        
         /**
          * Texture pass from CMultiTexturingManager which will be edited by brush
          */
         CMultiTexturingManager::STexturePass *first_pass;
 
         /**
-         * Gets intersection position with terrain mesh by ray traced from user mouse click position
-         * 
-         * @param clickPosition mouse click position on the screen
-         * @return intersection position (WITHOUT terrain scale factor affected)
-         */
-        core::vector3df getIntersectionPositionWithTerrain(const core::position2di clickPosition);
-
-        /**
          * Current terrain scale factor
          */
         f32 terrainSceneNodeScaleFactor;
+        
+        /**
+         * Current flag value representing edit mode
+         */
+        bool editMode;
+        
+        core::vector3df* intersectionPosition;
 
         /**
          * Paint pTerrainSceneNode node with brush
@@ -119,7 +159,10 @@ namespace irr {
          * @return			pointer to result, painted texture
          */
         video::ITexture* textureBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* texture);
+        
+        video::ITexture* textureBrush2(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* texture);
 
+        IrrlichtDevice* pDevice;
         /**
          * Pointer to IVideoDriver interface class instance
          */
@@ -160,6 +203,8 @@ namespace irr {
          * Pointer to CBrushManager class instance
          */
         CBrushManager* pBrushManager;
+        
+        DecalManager* pDecalManager;
     };
 } // end of namespace irr
 

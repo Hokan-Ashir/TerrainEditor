@@ -17,7 +17,7 @@ namespace irr {
      * @param pDevice pointer to IrrlichtDevice class instance
      * @param pTerrainEditor        pointer to CTerrainEditor class instance
      */
-    CGUIManager::CGUIManager(IrrlichtDevice* pDevice, CTerrainEditor* pTerrainEditor) : editMode(false) {
+    CGUIManager::CGUIManager(IrrlichtDevice* pDevice, CTerrainEditor* pTerrainEditor) {
         this->pDevice = pDevice;
         this->pTerrainEditor = pTerrainEditor;
 
@@ -91,22 +91,11 @@ namespace irr {
                 && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
             // save current terrain heightmap
             pTerrainEditor->saveTerrainHeightMap("heightmap_");
-        } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
+        } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_PAINT
                 && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
-            // Turn on/off lift/down-edit mode
-            editMode = !editMode;
-
-            // Turn on/off mouse control in GOTAnimator in pCameraSceneNode
-            core::list<scene::ISceneNodeAnimator*>::ConstIterator cameraAnimatorList = pTerrainEditor->getCameraSceneNode()->getAnimators().begin();
-            scene::CSceneNodeAnimatorCameraTerrain *GOTCameraAnimator = (scene::CSceneNodeAnimatorCameraTerrain*) * cameraAnimatorList;
-            GOTCameraAnimator->setMouseActive(!GOTCameraAnimator->getMouseActive());
-        }
-
-        if ((event.MouseInput.isLeftPressed() || event.MouseInput.isRightPressed()) && editMode) {
-            // paint terrain with current brush if any mouse button pressed and editMode active
-            const core::position2di clickPosition = pDevice->getCursorControl()->getPosition();
-            pTerrainEditor->textureTerrainWithCurrentBrush(clickPosition);
-        }
+            // Turn on/off paint-edit mode
+            pTerrainEditor->setEditMode(!pTerrainEditor->getEditMode());
+        }       
         return false;
     }
 
