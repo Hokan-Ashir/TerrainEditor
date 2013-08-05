@@ -85,17 +85,29 @@ namespace irr {
                     menuItemSelectedID = pGUIContextMenu->getItemCommandId(pGUIContextMenu->getSelectedItem());
                     break;
             }
-        }
 
-        if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_SAVE_SCENE
-                && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
-            // save current terrain heightmap
-            pTerrainEditor->saveTerrainHeightMap("heightmap_");
-        } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_PAINT
-                && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
-            // Turn on/off paint-edit mode
-            pTerrainEditor->setEditMode(!pTerrainEditor->getEditMode());
-        }       
+            if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_SAVE_SCENE
+                    && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
+                // save current terrain heightmap
+                pTerrainEditor->saveTerrainHeightMap("heightmap_");
+            } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_PAINT
+                    && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
+                // Turn on/off painting-edit mode
+                // & turn off lifting-edit mode if active
+                pTerrainEditor->setPaintingEditMode(!pTerrainEditor->getPaintingEditMode());
+                if (pTerrainEditor->getLiftingEditMode()) {
+                        pTerrainEditor->setLiftingEditMode(!pTerrainEditor->getLiftingEditMode());
+                }
+            } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
+                    && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
+                // Turn on/off lifting-edit mode
+                // & turn off painting-edit mode if active
+                pTerrainEditor->setLiftingEditMode(!pTerrainEditor->getLiftingEditMode());
+                if (pTerrainEditor->getPaintingEditMode()) {
+                        pTerrainEditor->setPaintingEditMode(!pTerrainEditor->getPaintingEditMode());
+                }
+            }
+        }
         return false;
     }
 

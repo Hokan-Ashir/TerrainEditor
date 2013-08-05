@@ -180,6 +180,8 @@ namespace irr {
                 const f32 lifeTime = 0, const f32 distance = 0, const bool useTerrainOnly = false);
 
         bool OnEvent(const SEvent &event);
+        
+        f32 getRotation() const;
     private:
         /**
          * Create mesh

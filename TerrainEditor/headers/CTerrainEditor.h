@@ -14,9 +14,16 @@
 #include "terrain.editor/CMultiTexturingManager.h"
 #include "terrain.editor/CBrushManager.h"
 #include "terrain.editor/decal.system/DecalManager.h"
+#include "terrain.editor/CMultiTexturingTerrainSceneNode.h"
+#include "terrain.editor/CTerrainSceneNode.h"
 
 namespace irr {
 
+    struct SCollisionParameters {
+        bool collisionDetected;
+        core::vector3df collisionPosition;
+        core::triangle3df collisionTriangle;
+    };
     /**
      * Class that implements all stuff for creation & manipulating terrain like
      * verticies lifting, texture blending etc. via different classes
@@ -58,7 +65,7 @@ namespace irr {
          * @param clickPosition mouse click position on the screen
          * @return intersection position (WITHOUT terrain scale factor affected)
          */
-        core::vector3df* getIntersectionPositionWithTerrain(const core::position2di clickPosition);
+        void getIntersectionParametersWithTerrain(const core::position2di clickPosition);
 
         /**
          * Saves terrain current height map
@@ -108,59 +115,59 @@ namespace irr {
          * 
          * @return current terrain scale factor
          */
-        f32 getTerrainScaleFactor() const;
+        core::vector3df getTerrainScaleFactor() const;
         
         /**
          * Setter
          * 
          * @param terrainScaleFactor new terrain scale factor
          */
-        void setTerrainScaleFactor(f32 terrainScaleFactor);
+        void setTerrainScaleFactor(core::vector3df terrainScaleFactor);
         
         /**
          * Getter
          * 
-         * @return current edit mode value
+         * @return current painting edit mode value
          */
-        bool getEditMode() const;
+        bool getPaintingEditMode() const;
 
         /**
          * Setter
          * 
-         * @param editMode new value of edit mode flag
+         * @param paintingEditMode new value of painting edit mode flag
          */
-        void setEditMode(bool editMode);
-    private:
-        f32 size;
+        void setPaintingEditMode(bool paintingEditMode);
         
+        /**
+         * Getter
+         * 
+         * @return current lifting edit mode value
+         */
+        bool getLiftingEditMode() const;
+
+        /**
+         * Setter
+         * 
+         * @param liftingEditMode new value of lifting edit mode flag
+         */
+        void setLiftingEditMode(bool liftingEditMode);
+    private:     
         /**
          * Texture pass from CMultiTexturingManager which will be edited by brush
          */
-        CMultiTexturingManager::STexturePass *first_pass;
+        scene::STexturePass *first_pass;
 
         /**
-         * Current terrain scale factor
+         * Current flag value representing painting edit mode
          */
-        f32 terrainSceneNodeScaleFactor;
+        bool paintingEditMode;
         
         /**
-         * Current flag value representing edit mode
+         * Current flag value representing lifting edit mode
          */
-        bool editMode;
+        bool liftingEditMode;
         
-        core::vector3df* intersectionPosition;
-
-        /**
-         * Paint pTerrainSceneNode node with brush
-         *
-         * @param vertexXCoordinate			center position of brush on X-axis
-         * @param vertexZCoordinate			center position of brush on Z-axis
-         * @param texture	ITexture pointer which instance user to paint pTerrainSceneNode node
-         * @return			pointer to result, painted texture
-         */
-        video::ITexture* textureBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* texture);
-        
-        video::ITexture* textureBrush2(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* texture);
+        SCollisionParameters collisionParameters;
 
         IrrlichtDevice* pDevice;
         /**
@@ -176,7 +183,7 @@ namespace irr {
         /**
          * Pointer to ITerrainSceneNode interface class instance
          */
-        scene::ITerrainSceneNode* pTerrainSceneNode;
+        scene::CMultiTexturingTerrainSceneNode* pTerrainSceneNode;
 
         /**
          * If set terrain node will rendered via wireframe flag, without textures
@@ -204,7 +211,7 @@ namespace irr {
          */
         CBrushManager* pBrushManager;
         
-        DecalManager* pDecalManager;
+        DecalManager* pDecalManager;        
     };
 } // end of namespace irr
 

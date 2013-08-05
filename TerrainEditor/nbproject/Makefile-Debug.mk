@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/CGUIMainMenu.o \
 	${OBJECTDIR}/src/CGUIManager.o \
 	${OBJECTDIR}/src/CMainApplication.o \
+	${OBJECTDIR}/src/CMultiTexturingTerrainSceneNode.o \
 	${OBJECTDIR}/src/CScreenShotFactory.o \
 	${OBJECTDIR}/src/CTerrainEditor.o \
 	${OBJECTDIR}/src/Main.o \
@@ -46,6 +47,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/terrain.editor/CBrushManager.o \
 	${OBJECTDIR}/src/terrain.editor/CMultiTexturingManager.o \
 	${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o \
+	${OBJECTDIR}/src/terrain.editor/CTerrainSceneNode.o \
+	${OBJECTDIR}/src/terrain.editor/CTerrainTriangleSelector.o \
 	${OBJECTDIR}/src/terrain.editor/decal.system/CBatchingMesh.o \
 	${OBJECTDIR}/src/terrain.editor/decal.system/DecalManager.o \
 	${OBJECTDIR}/src/terrain.editor/decal.system/DecalSceneNode.o
@@ -97,6 +100,11 @@ ${OBJECTDIR}/src/CMainApplication.o: src/CMainApplication.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CMainApplication.o src/CMainApplication.cpp
 
+${OBJECTDIR}/src/CMultiTexturingTerrainSceneNode.o: src/CMultiTexturingTerrainSceneNode.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CMultiTexturingTerrainSceneNode.o src/CMultiTexturingTerrainSceneNode.cpp
+
 ${OBJECTDIR}/src/CScreenShotFactory.o: src/CScreenShotFactory.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -131,6 +139,16 @@ ${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o: src/terrain.e
 	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CSceneNodeAnimatorCameraTerrain.o src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp
+
+${OBJECTDIR}/src/terrain.editor/CTerrainSceneNode.o: src/terrain.editor/CTerrainSceneNode.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CTerrainSceneNode.o src/terrain.editor/CTerrainSceneNode.cpp
+
+${OBJECTDIR}/src/terrain.editor/CTerrainTriangleSelector.o: src/terrain.editor/CTerrainTriangleSelector.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../../Irrlicht/irrlicht-1.8/include `pkg-config --cflags gl` `pkg-config --cflags xxf86vm`   -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/terrain.editor/CTerrainTriangleSelector.o src/terrain.editor/CTerrainTriangleSelector.cpp
 
 ${OBJECTDIR}/src/terrain.editor/decal.system/CBatchingMesh.o: src/terrain.editor/decal.system/CBatchingMesh.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/terrain.editor/decal.system

@@ -17,7 +17,10 @@
           </logicalFolder>
           <itemPath>src/terrain.editor/CBrushManager.cpp</itemPath>
           <itemPath>src/terrain.editor/CMultiTexturingManager.cpp</itemPath>
+          <itemPath>src/CMultiTexturingTerrainSceneNode.cpp</itemPath>
           <itemPath>src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp</itemPath>
+          <itemPath>src/terrain.editor/CTerrainSceneNode.cpp</itemPath>
+          <itemPath>src/terrain.editor/CTerrainTriangleSelector.cpp</itemPath>
         </logicalFolder>
         <itemPath>src/CEventReceiverManager.cpp</itemPath>
         <itemPath>src/CGUIMainMenu.cpp</itemPath>
@@ -45,7 +48,11 @@
           </logicalFolder>
           <itemPath>headers/terrain.editor/CBrushManager.h</itemPath>
           <itemPath>headers/terrain.editor/CMultiTexturingManager.h</itemPath>
+          <itemPath>headers/terrain.editor/CMultiTexturingTerrainSceneNode.h</itemPath>
           <itemPath>headers/terrain.editor/CSceneNodeAnimatorCameraTerrain.h</itemPath>
+          <itemPath>headers/terrain.editor/CTerrainSceneNode.h</itemPath>
+          <itemPath>headers/terrain.editor/CTerrainTriangleSelector.h</itemPath>
+          <itemPath>headers/terrain.editor/os.h</itemPath>
         </logicalFolder>
         <itemPath>headers/CEventReceiverManager.h</itemPath>
         <itemPath>headers/CGUIMainMenu.h</itemPath>
@@ -53,7 +60,7 @@
         <itemPath>headers/CMainApplication.h</itemPath>
         <itemPath>headers/CScreenShotFactory.h</itemPath>
         <itemPath>headers/CTerrainEditor.h</itemPath>
-        <itemPath>src/TextureTools.h</itemPath>
+        <itemPath>headers/TextureTools.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -114,6 +121,8 @@
       </item>
       <item path="headers/CTerrainEditor.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="headers/TextureTools.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="headers/terrain.editor/CBrushManager.h"
             ex="false"
             tool="3"
@@ -124,7 +133,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/CMultiTexturingTerrainSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="headers/terrain.editor/CSceneNodeAnimatorCameraTerrain.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/CTerrainSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/CTerrainTriangleSelector.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -144,6 +168,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/os.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/CEventReceiverManager.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CGUIMainMenu.cpp" ex="false" tool="1" flavor2="0">
@@ -152,6 +178,11 @@
       </item>
       <item path="src/CMainApplication.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/CMultiTexturingTerrainSceneNode.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="src/CScreenShotFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CTerrainEditor.cpp" ex="false" tool="1" flavor2="0">
@@ -159,8 +190,6 @@
       <item path="src/Main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/TextureTools.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/TextureTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/terrain.editor/CBrushManager.cpp"
             ex="false"
@@ -173,6 +202,16 @@
             flavor2="0">
       </item>
       <item path="src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/CTerrainSceneNode.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/CTerrainTriangleSelector.cpp"
             ex="false"
             tool="1"
             flavor2="0">
@@ -239,6 +278,8 @@
       </item>
       <item path="headers/CTerrainEditor.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="headers/TextureTools.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="headers/terrain.editor/CBrushManager.h"
             ex="false"
             tool="3"
@@ -249,7 +290,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/CMultiTexturingTerrainSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="headers/terrain.editor/CSceneNodeAnimatorCameraTerrain.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/CTerrainSceneNode.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="headers/terrain.editor/CTerrainTriangleSelector.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -269,6 +325,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="headers/terrain.editor/os.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/CEventReceiverManager.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CGUIMainMenu.cpp" ex="false" tool="1" flavor2="0">
@@ -277,6 +335,11 @@
       </item>
       <item path="src/CMainApplication.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/CMultiTexturingTerrainSceneNode.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="src/CScreenShotFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/CTerrainEditor.cpp" ex="false" tool="1" flavor2="0">
@@ -284,8 +347,6 @@
       <item path="src/Main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/TextureTools.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/TextureTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/terrain.editor/CBrushManager.cpp"
             ex="false"
@@ -298,6 +359,16 @@
             flavor2="0">
       </item>
       <item path="src/terrain.editor/CSceneNodeAnimatorCameraTerrain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/CTerrainSceneNode.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/terrain.editor/CTerrainTriangleSelector.cpp"
             ex="false"
             tool="1"
             flavor2="0">

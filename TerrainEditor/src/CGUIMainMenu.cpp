@@ -84,13 +84,13 @@ namespace irr {
             //bar->addButton(GUI_ID_BUTTON_SHOW_TOOLBOX, 0, L"Open scene", image, 0, false, true);
 
             video::ITexture* image = pVideoDriver->getTexture("save.png");
-            bar->addButton(GUI_ID_BUTTON_SAVE_SCENE, 0, L"Save", image, 0, false, true);
-
-            //image = pVideoDriver->getTexture("lift.png");
-            //bar->addButton(GUI_ID_BUTTON_LIFT_DOWN, 0, L"Lift/low landscape", image, 0, false, true);
+            bar->addButton(GUI_ID_BUTTON_SAVE_SCENE, 0, L"Save", image, 0, false, true);         
 
             image = pVideoDriver->getTexture("paint.png");
             bar->addButton(GUI_ID_BUTTON_PAINT, 0, L"Paint landscape with selected brush", image, 0, false, true);
+            
+            image = pVideoDriver->getTexture("lift.png");
+            bar->addButton(GUI_ID_BUTTON_LIFT_DOWN, 0, L"Lift/low landscape", image, 0, false, true);
 
             // create a combobox for texture filters
 

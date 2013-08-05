@@ -31,7 +31,8 @@ namespace irr {
         scene::ISceneNode* skydome = pSceneManager->addSkyDomeSceneNode(pVideoDriver->getTexture("Data/textures/skydome.jpg"), 16, 8, 0.95f, 2.0f);
         skydome->setRotation(core::vector3df(0, -100, 0));
 
-        pTerrainEditor = new CTerrainEditor(pDevice, "Data/textures/splatting_test2.png", 10.0f);
+        // Data/textures/splatting_test2.png
+        pTerrainEditor = new CTerrainEditor(pDevice, "texture/terrain-heightmap4.png", 10.0f);
 
         // create GUI enviroment & set its font
         pGUIEnviroment = pDevice->getGUIEnvironment();
@@ -42,11 +43,11 @@ namespace irr {
 
         pEventReceiverManager = new CEventReceiverManager();
         pScreenShotFactory = new CScreenShotFactory(pDevice, "screenshot");
-        //pEventReceiverManager->addEventReceiver(SEventReceiver(pScreenShotFactory, "pScreenShotFactory", false));
-        //pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor, "pTerrainEditor", false));
-        //pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getBrushManager(), "pBrushManager", false));
-        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getDecalManager(), "pDecalManager", true));
-        //pEventReceiverManager->addEventReceiver(SEventReceiver(pGUIManager, "pGUIManager", false));
+        pEventReceiverManager->addEventReceiver(SEventReceiver(pScreenShotFactory, "pScreenShotFactory", false));
+        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor, "pTerrainEditor", false));
+        pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getBrushManager(), "pBrushManager", false));
+        //pEventReceiverManager->addEventReceiver(SEventReceiver(pTerrainEditor->getDecalManager(), "pDecalManager", true));
+        pEventReceiverManager->addEventReceiver(SEventReceiver(pGUIManager, "pGUIManager", false));
         pEventReceiverManager->addEventReceiver(SEventReceiver(this, "pMainApplication", false));
         pDevice->setEventReceiver(pEventReceiverManager);
     }

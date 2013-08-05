@@ -11,6 +11,8 @@
 #include <IEventReceiver.h>
 #include <IVideoDriver.h>
 #include <ITerrainSceneNode.h>
+#include "../../headers/terrain.editor/decal.system/DecalManager.h"
+#include "../../headers/terrain.editor/decal.system/DecalSceneNode.h"
 
 namespace irr {
 
@@ -25,7 +27,7 @@ namespace irr {
          * @param pVideoDriver  pointer to IVideoDriver interface
          * @param pTerrainSceneNode     pointer to ITerrainSceneNode interface; over which brushes draws
          */
-        CBrushManager(video::IVideoDriver* pVideoDriver, scene::ITerrainSceneNode* pTerrainSceneNode);
+        CBrushManager(video::IVideoDriver* pVideoDriver, scene::ITerrainSceneNode* pTerrainSceneNode, DecalManager* pDecalManager);
         
         /**
          * Copy constructor (not implemented)
@@ -38,6 +40,10 @@ namespace irr {
          * Virtual destuctor
          */
         virtual ~CBrushManager();
+        
+        void constructBrush();
+        
+        void createDecalNode(core::vector3df nodePosition, core::vector3df nodeNormal);
         
         /**
          * Draws everything - brush, its border, any other suff
@@ -57,6 +63,10 @@ namespace irr {
          * @param brushCenter   coordinates of brush center
          */
         void drawCircleBrushBorder(core::vector3df brushCenter);
+        
+        video::ITexture* paintTextureWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* paintingTexture);
+        
+        void raiseVerticesWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, bool up);
         
         /**
          * Operates events affecting on brush - changing parameters, drawing etc.
@@ -139,9 +149,9 @@ namespace irr {
         /**
          * Getter
          * 
-         * @return pointer to IImage interface representing current brush
+         * @return pointer to ITexture interface representing current brush
          */
-        video:: IImage* getCurrentBrush() const;
+        video:: ITexture* getCurrentBrush() const;
     private:
         
         bool isLCtrlButtonPressed;
@@ -151,9 +161,9 @@ namespace irr {
         void outOfTerrainPerimeterCheck(f32* x, f32* z);
         
         /**
-         * Pointer to IImage interface representing current brush
+         * Pointer to ITexture interface representing current brush
          */
-        video::IImage* pBrush;
+        video::ITexture* pBrush;
         
         /**
          * Pointer to IVideoDriver interface
@@ -189,6 +199,12 @@ namespace irr {
          * Current brush border colour
          */
         video::SColor borderColour;
+        
+        f32 raiseStep;
+        
+        DecalManager* pDecalManager;
+        
+        scene::DecalSceneNode* pDecalSceneNode;  
     };
 } // end of namespace irr 
 

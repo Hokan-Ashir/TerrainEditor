@@ -5,7 +5,7 @@
  * Created on 26 Июль 2013 г., 21:16
  */
 
-#include "TextureTools.h"
+#include "../headers/TextureTools.h"
 
 namespace irr {
 

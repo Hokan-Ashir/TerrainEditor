@@ -32,7 +32,7 @@ namespace irr {
         terrain = 0;
         createMetaTriangleSelector();
 
-        size = 4;
+        size = 40;
         lifetime = 0;
         distance = 0;
         rotation = 0;
@@ -422,6 +422,10 @@ namespace irr {
         }
 
         return false;
+    }
+    
+    f32 DecalManager::getRotation() const {
+       return rotation; 
     }
 
     scene::IMesh* DecalManager::createMesh(core::aabbox3df box, core::matrix4 rotationMatrix, const bool useTerrainOnly) {
