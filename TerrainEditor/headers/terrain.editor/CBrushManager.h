@@ -165,6 +165,8 @@ namespace irr {
          */
         video::ITexture* pBrush;
         
+        video::ITexture* pDecalTexture;
+        
         /**
          * Pointer to IVideoDriver interface
          */

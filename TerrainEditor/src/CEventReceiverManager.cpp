@@ -70,7 +70,7 @@ namespace irr {
             eventReceivers.erase(searchIndex);
         }
     }
-
+    
     /**
      * Operates common OnEvent events from application
      * 

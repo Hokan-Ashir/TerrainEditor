@@ -32,7 +32,7 @@ namespace irr {
         skydome->setRotation(core::vector3df(0, -100, 0));
 
         // Data/textures/splatting_test2.png
-        pTerrainEditor = new CTerrainEditor(pDevice, "texture/terrain-heightmap4.png", 10.0f);
+        pTerrainEditor = new CTerrainEditor(pDevice, "texture/terrain-heightmap5.png", 10.0f);
 
         // create GUI enviroment & set its font
         pGUIEnviroment = pDevice->getGUIEnvironment();

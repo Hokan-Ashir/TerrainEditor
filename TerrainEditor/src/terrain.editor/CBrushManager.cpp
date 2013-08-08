@@ -29,6 +29,7 @@ namespace irr {
      * drops only loaded image of brush
      */
     CBrushManager::~CBrushManager() {
+        pDecalTexture->drop();
         pBrush->drop();
     }
 
@@ -75,21 +76,24 @@ namespace irr {
             }
         }
 
-        pBrush = pVideoDriver->addTexture("brush", pResultImage);
-        pBrush->grab();
+        pDecalTexture = pVideoDriver->addTexture("decalTexture", pResultImage);
+        pDecalTexture->grab();
         pGrassImage->drop();
         pResultImage->drop();
 
         brushRadius = pBrushImage->getDimension().Height / 2;
         brushMaximumRadius = brushRadius * 2;
         brushMinimumRadius = brushRadius / 2;
+        
+        pBrush = pVideoDriver->addTexture("brush", pBrushImage);
+        pBrush->grab();
         pBrushImage->drop();
     }
 
     void CBrushManager::createDecalNode(core::vector3df nodePosition, core::vector3df nodeNormal) {
         // TODO change to refresh-method, set rotation & far value
         if (pDecalSceneNode == 0) {
-            pDecalSceneNode = pDecalManager->addDecal(pBrush,
+            pDecalSceneNode = pDecalManager->addDecal(pDecalTexture,
                     core::vector3df(brushRadius * 8,
                     0,
                     brushRadius * 8),
@@ -377,6 +381,7 @@ namespace irr {
 
     video::ITexture* CBrushManager::paintTextureWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* paintingTexture) {
         // TODO this painting works "nice" (visually all seems good) only on square terrains
+        // change pDecalTexture to pBrush
 
         u32 paintingTextureWidth = paintingTexture->getSize().Width;
         u32 paintingTextureHeight = paintingTexture->getSize().Height;
@@ -407,16 +412,16 @@ namespace irr {
         // as we use similar (see ... function in ... class: pResultImage->getDimension().Height / pBrushImage->getDimension().Height)
         // scale factors to "inject" brush texture into brush, here we use mirror-like scale factors to "extract" brush pixels from 
         // brush texture
-        u32 brushTextureToBrushSizeWidthScaleFactor = pBrush->getSize().Width / brushWidth;
-        u32 brushTextureToBrushSizeHeightScaleFactor = pBrush->getSize().Height / brushHeight;
+        u32 brushTextureToBrushSizeWidthScaleFactor = pDecalTexture->getSize().Width / brushWidth;
+        u32 brushTextureToBrushSizeHeightScaleFactor = pDecalTexture->getSize().Height / brushHeight;
 
         // lock array of pixels & paint painting texture if and only if brush texture pixels not transparent
         video::SColor* pPaintingTexturePixels = (video::SColor*)paintingTexture->lock(video::ETLM_WRITE_ONLY);
-        video::SColor* pBrushPixels = (video::SColor*)pBrush->lock(video::ETLM_READ_ONLY);
+        video::SColor* pBrushPixels = (video::SColor*)pDecalTexture->lock(video::ETLM_READ_ONLY);
         for (u32 x = 0; x < brushHeight; ++x) {
             for (u32 y = 0; y < brushWidth; ++y) {
                 if (pBrushPixels[y * brushTextureToBrushSizeWidthScaleFactor
-                        + x * pBrush->getSize().Width * brushTextureToBrushSizeHeightScaleFactor].getAlpha() != 0) {
+                        + x * pDecalTexture->getSize().Width * brushTextureToBrushSizeHeightScaleFactor].getAlpha() != 0) {
                     if ((startIndex + (y + x * paintingTextureWidth)) >= 0
                             && (startIndex + (y + x * paintingTextureWidth)) <= paintingTextureSize)
                         pPaintingTexturePixels[startIndex + (y + x * paintingTextureWidth)].set(255, 255, 0, 0);
@@ -425,7 +430,7 @@ namespace irr {
         }
 
         paintingTexture->unlock();
-        pBrush->unlock();
+        pDecalTexture->unlock();
 
         return paintingTexture;
     }
@@ -434,9 +439,14 @@ namespace irr {
   Raise or lower terrain (selected vertice by brush)
 ==============================================================================*/
     void CBrushManager::raiseVerticesWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, bool up) {
+        // TODO make dynamic triangle selector
+        
         scene::IMesh* pMesh = pTerrainSceneNode->getMesh();
+        vertexXCoordinate++;
+        //vertexZCoordinate++;
 
-        s32 heightmapWidth = pTerrainSceneNode->getBoundingBox().MaxEdge.X / pTerrainSceneNode->getScale().X;
+        s32 heightmapWidth;// = pTerrainSceneNode->getBoundingBox().MaxEdge.X / pTerrainSceneNode->getScale().X;
+        s32 heightmapSize;
         //s32 heightmapHeight = heightmap->getDimension().Height;
 
         for (s32 b = 0; b < pMesh->getMeshBufferCount(); ++b) {
@@ -444,29 +454,36 @@ namespace irr {
             // skip mesh buffers that are not the right type
             if (pMeshBuffer->getVertexType() != video::EVT_2TCOORDS)
                 continue;
+            
+            heightmapWidth = static_cast<s32>(core::squareroot(static_cast<f32>(pMeshBuffer->getVertexCount())));
+            heightmapSize = heightmapWidth * heightmapWidth;
 
             video::S3DVertex2TCoords* pVertices = (video::S3DVertex2TCoords*)pMeshBuffer->getVertices();
 
-            s32 brushWidth = brushRadius * 2;
-            s32 brushHeight = brushRadius * 2;
+            s32 brushWidth = pBrush->getSize().Width;//brushRadius * 2;
+            s32 brushHeight = pBrush->getSize().Height;//brushRadius * 2;
             u32 startIndex = vertexXCoordinate * heightmapWidth + vertexZCoordinate;
-            //startIndex -= ((brushWidth / 2) + (brushHeight / 2 * heightmapWidth));
+            startIndex -= ((brushWidth / 2) + (brushHeight / 2 * heightmapWidth));
 
             video::SColor* pBrushPixels = (video::SColor*)pBrush->lock(video::ETLM_READ_ONLY);
             for (s32 y = 0; y < brushHeight; ++y) {
                 for (s32 x = 0; x < brushWidth; ++x) {
-                    /*if ((startIndex + (x + y * heightmapWidth)) >= 0) {
+                    if ((startIndex + (x + y * heightmapWidth)) >= 0 
+                            && (startIndex + (x + y * heightmapWidth)) <= heightmapSize) {
                         f32 hy = pVertices[startIndex + (x + y * heightmapWidth)].Pos.Y;
-                        f32 bp = pBrushPixels[startIndex + (x + y * heightmapWidth)].getRed() / 255.0 * raiseStep;
+                        f32 bp = pBrushPixels[x + y * brushWidth].getRed() / 255.0 * raiseStep;
                         bp = (up) ? bp : -bp;
+                        hy += bp;
 
-                        if (/*bp > 0 &&*//* (hy + bp) <= 255 && (hy + bp) >= 0)
-                            pVertices[startIndex + (x + y * heightmapWidth)].Pos.Y = hy + bp;                    
-                    }*/
-                    pVertices[startIndex + x + y * heightmapWidth].Pos.Y += 25;
+                        if (hy <= 255 && hy >= -255) {
+                            pVertices[startIndex + (x + y * heightmapWidth)].Pos.Y = hy;
+                        }
+                    }
+                    ;//pVertices[startIndex + x + y * heightmapWidth].Pos.Y += 25;
                 }
             }
-           /* for (u32 i = 0; i < 128; ++i) {
+            //pVertices[startIndex].Pos.Y += 25;
+            /*for (u32 i = 0; i < heightmapWidth + 2; ++i) {
                 pVertices[i].Pos.Y += 25;
             }*/
             pBrush->unlock();

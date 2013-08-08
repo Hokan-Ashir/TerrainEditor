@@ -23,7 +23,7 @@ namespace irr {
      * @param terrainSceneNodeScaleFactor   terrain scale factor
      */
     CTerrainEditor::CTerrainEditor(IrrlichtDevice* pDevice, core::stringw heightMapName, f32 terrainSceneNodeScaleFactor) :
-    wireframeMode(false), paintingEditMode(false), liftingEditMode(false) {
+    wireframeMode(false), paintingEditMode(false), liftingEditMode(false), isLMBPressed(false), isRMBPressed(false) {
         this->pDevice = pDevice;
         this->pVideoDriver = pDevice->getVideoDriver();
         this->pSceneManager = pDevice->getSceneManager();
@@ -63,6 +63,15 @@ namespace irr {
                 scene::ETPS_17, // patchSize
                 3 // smoothFactor
                 );
+
+        //pTerrainSceneNode->setDynamicSelectorUpdate(true);
+
+        //scene::CDynamicMeshBuffer* buffer = new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);
+        //pTerrainSceneNode->getMeshBufferForLOD(*buffer, 0);
+        //video::S3DVertex2TCoords* data = (video::S3DVertex2TCoords*)buffer->getVertexBuffer().getData();
+
+        // Work on data or get the IndexBuffer with a similar call.
+        //buffer->drop(); // When done drop the buffer again.
 
         /*pTerrainSceneNode->setMaterialTexture(0, pVideoDriver->getTexture("media/terrain-texture.jpg"));
         pTerrainSceneNode->setMaterialTexture(1, pVideoDriver->getTexture("media/detailmap3.jpg"));
@@ -151,6 +160,12 @@ namespace irr {
                 pBrushManager->drawCircleBrushBorder(collisionParameters.collisionPosition);
                 //pBrushManager->drawSquareBrushBorder(core::vector3df(*intersectionPosition));
             }
+        }
+
+        if (liftingEditMode && collisionParameters.collisionDetected && (isLMBPressed || isRMBPressed)) {
+            pBrushManager->raiseVerticesWithBrush(collisionParameters.collisionPosition.X / pTerrainSceneNode->getScale().X,
+                    collisionParameters.collisionPosition.Z / pTerrainSceneNode->getScale().Z,
+                    isLMBPressed);
         }
 
         //pBrushManager->drawAll();
@@ -245,19 +260,29 @@ namespace irr {
         }
 
         if (paintingEditMode || liftingEditMode) {
-            if ((event.EventType == EET_MOUSE_INPUT_EVENT)
-                    && (event.MouseInput.Event == EMIE_MOUSE_MOVED || event.MouseInput.Event == EMIE_MOUSE_WHEEL)) {
-                const core::position2di mousePosition = pDevice->getCursorControl()->getPosition();
-                getIntersectionParametersWithTerrain(mousePosition);
-                printf("Collision point X: %f\tY: %fZ: %f\n", collisionParameters.collisionPosition.X,
-                    collisionParameters.collisionPosition.Y,
-                    collisionParameters.collisionPosition.Z);
+            if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+                if ((event.MouseInput.Event == EMIE_MOUSE_MOVED || event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+                        /*&& pDevice->getGUIEnvironment()->hasFocus(pDevice->getGUIEnvironment()->getRootGUIElement())*/) {
+                    const core::position2di mousePosition = pDevice->getCursorControl()->getPosition();
+                    getIntersectionParametersWithTerrain(mousePosition);
+                    printf("Collision point X: %f\tY: %fZ: %f\n", collisionParameters.collisionPosition.X,
+                            collisionParameters.collisionPosition.Y,
+                            collisionParameters.collisionPosition.Z);
+                } else if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+                    isLMBPressed = true;
+                } else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+                    isLMBPressed = false;
+                } else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
+                    isRMBPressed = true;
+                } else if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
+                    isRMBPressed = false;
+                }
             }
         }
 
-        if (paintingEditMode && collisionParameters.collisionDetected) {           
+        if (paintingEditMode && collisionParameters.collisionDetected) {
             pBrushManager->createDecalNode(collisionParameters.collisionPosition, collisionParameters.collisionTriangle.getNormal());
-            if ((event.EventType == EET_MOUSE_INPUT_EVENT) && (event.MouseInput.isLeftPressed() || event.MouseInput.isRightPressed())) {
+            if (isLMBPressed || isRMBPressed) {
                 if (collisionParameters.collisionDetected) {
                     // paint terrain with current brush if any mouse button pressed and editMode active   
                     //textureTerrainWithCurrentBrush(*intersectionPosition);
@@ -265,14 +290,6 @@ namespace irr {
                             collisionParameters.collisionPosition.Y,
                             collisionParameters.collisionPosition.Z / pTerrainSceneNode->getScale().Z));
                 }
-            }
-        }
-        
-        if (liftingEditMode && collisionParameters.collisionDetected) {
-            if ((event.EventType == EET_MOUSE_INPUT_EVENT) && (event.MouseInput.isLeftPressed() || event.MouseInput.isRightPressed())) {
-            pBrushManager->raiseVerticesWithBrush(collisionParameters.collisionPosition.X / pTerrainSceneNode->getScale().X,
-                    collisionParameters.collisionPosition.Z / pTerrainSceneNode->getScale().Z,
-                    event.MouseInput.isLeftPressed());
             }
         }
 

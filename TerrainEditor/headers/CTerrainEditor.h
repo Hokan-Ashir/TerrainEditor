@@ -167,6 +167,10 @@ namespace irr {
          */
         bool liftingEditMode;
         
+        bool isLMBPressed;
+        
+        bool isRMBPressed;
+        
         SCollisionParameters collisionParameters;
 
         IrrlichtDevice* pDevice;

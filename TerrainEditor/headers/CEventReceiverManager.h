@@ -21,7 +21,7 @@ namespace irr {
      */
     struct SEventReceiver {
 
-        SEventReceiver(IEventReceiver* pEventReceiver, core::stringw eventReceiverName, bool allowFutherEventsHandle) {
+        SEventReceiver(IEventReceiver* pEventReceiver, core::stringw eventReceiverName, bool allowFutherEventsHandle = false) {
             this->pEventReceiver = pEventReceiver;
             this->eventReceiverName = eventReceiverName;
             this->allowFutherEventsHandle = allowFutherEventsHandle;
@@ -74,7 +74,7 @@ namespace irr {
          * @param eventReceiverName     name of event receiver to be removed
          */
         void removeEventReceiverByName(core::stringw eventReceiverName);
-
+        
         /**
          * Operates common OnEvent events from application
          * 

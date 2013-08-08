@@ -23,6 +23,10 @@ namespace irr {
 
         // creates GUI itself
         gui::CGUIMainMenu mainMenu = gui::CGUIMainMenu(pDevice->getGUIEnvironment());
+        
+        /*gui::IGUISkin* defaultSkin = pDevice->getGUIEnvironment()->createSkin(gui::EGST_BURNING_SKIN);
+	pDevice->getGUIEnvironment()->setSkin(defaultSkin);
+	defaultSkin->drop();*/
     }
 
     /**
@@ -86,25 +90,40 @@ namespace irr {
                     break;
             }
 
-            if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_SAVE_SCENE
+            if (/*pDevice->getGUIEnvironment()->hasFocus(pDevice->getGUIEnvironment()->getRootGUIElement())
+                    && */this->getEventCallerByID() == gui::GUI_ID_BUTTON_SAVE_SCENE
                     && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
+                // pTerrainEditor->getCameraSceneNode()->setInputReceiverEnabled(false);
+                // create the toolbox window
+                gui::IGUIWindow* saveTerrainHeightMapWindow = pDevice->getGUIEnvironment()->addWindow(core::rect<s32>(
+                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 - 150,
+                        pDevice->getVideoDriver()->getScreenSize().Height / 2 - 100),
+                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 + 150,
+                        pDevice->getVideoDriver()->getScreenSize().Height / 2 + 100)),
+                        false, L"Save terrain heightmap", 0, gui::GUI_ID_WINDOW_SAVE_HEIGHTMAP);
+
+                pDevice->getGUIEnvironment()->addStaticText(L"Enter terrain heightmap file name:", core::rect<s32>(10, 48, 190, 66), false, false, saveTerrainHeightMapWindow);
+                pDevice->getGUIEnvironment()->addEditBox(L"", core::rect<s32>(10, 66, 190, 88), true, saveTerrainHeightMapWindow, gui::GUI_ID_EDITBOX_HEIGHTMAP_NAME);
                 // save current terrain heightmap
-                pTerrainEditor->saveTerrainHeightMap("heightmap_");
-            } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_PAINT
+                // pTerrainEditor->saveTerrainHeightMap("heightmap_");
+                // pTerrainEditor->getCameraSceneNode()->setInputReceiverEnabled(true);
+            } else if (/*pDevice->getGUIEnvironment()->hasFocus(pDevice->getGUIEnvironment()->getRootGUIElement())
+                    && */this->getEventCallerByID() == gui::GUI_ID_BUTTON_PAINT
                     && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
                 // Turn on/off painting-edit mode
                 // & turn off lifting-edit mode if active
                 pTerrainEditor->setPaintingEditMode(!pTerrainEditor->getPaintingEditMode());
                 if (pTerrainEditor->getLiftingEditMode()) {
-                        pTerrainEditor->setLiftingEditMode(!pTerrainEditor->getLiftingEditMode());
+                    pTerrainEditor->setLiftingEditMode(!pTerrainEditor->getLiftingEditMode());
                 }
-            } else if (this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
+            } else if (/*pDevice->getGUIEnvironment()->hasFocus(pDevice->getGUIEnvironment()->getRootGUIElement())
+                    && */this->getEventCallerByID() == gui::GUI_ID_BUTTON_LIFT_DOWN
                     && this->getEventCallerByElement(gui::EGET_BUTTON_CLICKED)) {
                 // Turn on/off lifting-edit mode
                 // & turn off painting-edit mode if active
                 pTerrainEditor->setLiftingEditMode(!pTerrainEditor->getLiftingEditMode());
                 if (pTerrainEditor->getPaintingEditMode()) {
-                        pTerrainEditor->setPaintingEditMode(!pTerrainEditor->getPaintingEditMode());
+                    pTerrainEditor->setPaintingEditMode(!pTerrainEditor->getPaintingEditMode());
                 }
             }
         }

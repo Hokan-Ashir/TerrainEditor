@@ -50,7 +50,7 @@ namespace irr {
          * Resets all affected GUI elements (must be called every frame, before any event)
          */
         void resetAllGUIElements();
-        
+                       
         /**
          * Operates events affecting on GUI - pressing buttons, selecting elements
          * 
@@ -96,8 +96,8 @@ namespace irr {
         /**
          * Pointer to IrrlichtDevice class instance
          */
-        IrrlichtDevice* pDevice;       
-        
+        IrrlichtDevice* pDevice; 
+              
         /**
          * Array of GUI elements statuses
          */

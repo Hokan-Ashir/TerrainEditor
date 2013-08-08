@@ -74,7 +74,7 @@ namespace irr {
         //! scene::ISceneManager::addFPSCameraSceneNode, may want to get this input
         //! for changing their position, look at target or whatever.
 
-        bool CSceneNodeAnimatorCameraTerrain::OnEvent(const SEvent& evt) {
+        bool CSceneNodeAnimatorCameraTerrain::OnEvent(const SEvent& evt) {            
             switch (evt.EventType) {
                 case EET_KEY_INPUT_EVENT:
                     for (u32 i = 0; i < KeyMap.size(); ++i) {

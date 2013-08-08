@@ -24,6 +24,9 @@ namespace irr {
             GUI_ID_BUTTON_SAVE_SCENE,
             GUI_ID_BUTTON_PAINT,
             GUI_ID_BUTTON_LIFT_DOWN,
+            
+            GUI_ID_WINDOW_SAVE_HEIGHTMAP,
+            GUI_ID_EDITBOX_HEIGHTMAP_NAME,
 
             GUI_ID_SKY_BOX_VISIBLE,
             GUI_ID_TOGGLE_DEBUG_INFO,
