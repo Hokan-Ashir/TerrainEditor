@@ -203,7 +203,7 @@ namespace irr {
          * Pointer to ITriangleSelector interface class instance
          * Represents selector over all terrain
          */
-        scene::ITriangleSelector* pTerrainSceneNodeSelector;
+        //scene::ITriangleSelector* pTerrainSceneNodeSelector;
 
         /**
          * Pointer to CMultiTexturingManager class instance

@@ -7,6 +7,7 @@
 
 #include "../../headers/terrain.editor/CBrushManager.h"
 
+// TODO use pBrush pixels as transparency layer
 namespace irr {
 
     /**
@@ -16,12 +17,12 @@ namespace irr {
      * @param pTerrainSceneNode     pointer to ITerrainSceneNode interface; over which brushes draws
      */
     CBrushManager::CBrushManager(video::IVideoDriver* pVideoDriver, scene::ITerrainSceneNode* pTerrainSceneNode, DecalManager* pDecalManager) :
-    brushYAngle(0.0f), borderColour(video::SColor(0, 255, 0, 0)), isLCtrlButtonPressed(false), isLAltButtonPressed(false),
-    pDecalSceneNode(0), raiseStep(5.0f) {
+    brushYAngle(0.0f), borderColour(video::SColor(0, 255, 0, 0)), isLCtrlButtonPressed(false), isLAltButtonPressed(false), brushType(0),
+    pDecalSceneNode(0), raiseStep(5.0f), pDecalTexture(0), pBrush(0) {
         this->pVideoDriver = pVideoDriver;
         this->pTerrainSceneNode = pTerrainSceneNode;
         this->pDecalManager = pDecalManager;
-        constructBrush();
+        constructBrush("Data/textures/Gras.jpg", "texture/curcle_brush.png");
     }
 
     /**
@@ -33,14 +34,24 @@ namespace irr {
         pBrush->drop();
     }
 
-    void CBrushManager::constructBrush() {
-        video::IImage* pGrassImage = pVideoDriver->createImageFromFile("Data/textures/Gras.jpg");
-        video::IImage* pBrushImage = pVideoDriver->createImageFromFile("texture/brush.png");
+    bool CBrushManager::constructBrush(const io::path& decalImageFilePath, const io::path& brushFilePath) {
+        video::IImage* pDecalImage = pVideoDriver->createImageFromFile(decalImageFilePath);
+        video::IImage* pBrushImage = pVideoDriver->createImageFromFile(brushFilePath);
         video::IImage* pResultImage;
-        if (pGrassImage->getColorFormat() != video::ECF_A8R8G8B8) {
-            pResultImage = pVideoDriver->createImage(video::ECF_A8R8G8B8, pGrassImage->getDimension());
-        } else {
-            pResultImage = pGrassImage;
+        // do not recreate image with alpha channel if we already have one
+        if (pDecalTexture == 0 || pDecalTexture->getSize() != pDecalImage->getDimension()) {
+            if (pDecalImage->getColorFormat() != video::ECF_A8R8G8B8) {
+                pResultImage = pVideoDriver->createImage(video::ECF_A8R8G8B8, pDecalImage->getDimension());
+            } else {
+                pResultImage = pDecalImage;
+            }
+            
+            if (pDecalTexture != 0) {
+                pDecalTexture->drop();
+            }
+            pDecalTexture = pVideoDriver->addTexture("decalTexture", pResultImage);
+            pDecalTexture->grab();
+            pResultImage->drop();
         }
 
         // TODO check if this code is faster than lower one
@@ -58,36 +69,39 @@ namespace irr {
 
         u32 heightScaleFactor = 1;
         u32 widthScaleFactor = 1;
-        if (pResultImage->getDimension().Height > pBrushImage->getDimension().Height) {
-            heightScaleFactor = pResultImage->getDimension().Height / pBrushImage->getDimension().Height;
+        if (pDecalTexture->getSize().Height > pBrushImage->getDimension().Height) {
+            heightScaleFactor = pDecalTexture->getSize().Height / pBrushImage->getDimension().Height;
         }
 
-        if (pResultImage->getDimension().Width > pBrushImage->getDimension().Width) {
-            widthScaleFactor = pResultImage->getDimension().Width / pBrushImage->getDimension().Width;
+        if (pDecalTexture->getSize().Width > pBrushImage->getDimension().Width) {
+            widthScaleFactor = pDecalTexture->getSize().Width / pBrushImage->getDimension().Width;
         }
 
-        for (u32 i = 0; i < pResultImage->getDimension().Height; ++i) {
-            for (u32 j = 0; j < pResultImage->getDimension().Width; ++j) {
+        video::SColor* pDecalTexturePixels = (video::SColor*)pDecalTexture->lock(video::ETLM_READ_WRITE, 0);
+        for (u32 i = 0; i < pDecalTexture->getSize().Height; ++i) {
+            for (u32 j = 0; j < pDecalTexture->getSize().Width; ++j) {
                 if (pBrushImage->getPixel(i / heightScaleFactor, j / widthScaleFactor).getRed() == 0) {
-                    pResultImage->setPixel(i, j, video::SColor(0, 255, 255, 255));
+                    pDecalTexturePixels[j + i * pDecalTexture->getSize().Width].set(0, 255, 255, 255);
                 } else {
-                    pResultImage->setPixel(i, j, pGrassImage->getPixel(i, j));
+                    pDecalTexturePixels[j + i * pDecalTexture->getSize().Width].set(pDecalImage->getPixel(i, j).color);
                 }
             }
         }
-
-        pDecalTexture = pVideoDriver->addTexture("decalTexture", pResultImage);
-        pDecalTexture->grab();
-        pGrassImage->drop();
-        pResultImage->drop();
+        pDecalTexture->unlock();
+        pDecalImage->drop();        
 
         brushRadius = pBrushImage->getDimension().Height / 2;
         brushMaximumRadius = brushRadius * 2;
         brushMinimumRadius = brushRadius / 2;
-        
+
+        if (pBrush != 0) {
+            pBrush->drop();
+        }
         pBrush = pVideoDriver->addTexture("brush", pBrushImage);
         pBrush->grab();
         pBrushImage->drop();
+
+        return true;
     }
 
     void CBrushManager::createDecalNode(core::vector3df nodePosition, core::vector3df nodeNormal) {
@@ -311,6 +325,20 @@ namespace irr {
         pVideoDriver->setMaterial(video::SMaterial());
     }
 
+    void CBrushManager::drawBrushBorder(core::vector3df brushCenter) {
+        switch (brushType) {
+            case 0:
+                drawCircleBrushBorder(brushCenter);
+                break;
+            case 1:
+                drawSquareBrushBorder(brushCenter);
+                break;
+            default:
+                drawSquareBrushBorder(brushCenter);
+                break;
+        }
+    }
+
     // TODO rotation (not need in circle, but use for brush direction)
 
     /**
@@ -424,7 +452,7 @@ namespace irr {
                         + x * pDecalTexture->getSize().Width * brushTextureToBrushSizeHeightScaleFactor].getAlpha() != 0) {
                     if ((startIndex + (y + x * paintingTextureWidth)) >= 0
                             && (startIndex + (y + x * paintingTextureWidth)) <= paintingTextureSize)
-                        pPaintingTexturePixels[startIndex + (y + x * paintingTextureWidth)].set(255, 255, 0, 0);
+                        pPaintingTexturePixels[startIndex + (y + x * paintingTextureWidth)].set(255, 0, 255, 0);
                 }
             }
         }
@@ -435,17 +463,17 @@ namespace irr {
         return paintingTexture;
     }
 
-/*==============================================================================
+    /*==============================================================================
   Raise or lower terrain (selected vertice by brush)
 ==============================================================================*/
     void CBrushManager::raiseVerticesWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, bool up) {
         // TODO make dynamic triangle selector
-        
+
         scene::IMesh* pMesh = pTerrainSceneNode->getMesh();
         vertexXCoordinate++;
         //vertexZCoordinate++;
 
-        s32 heightmapWidth;// = pTerrainSceneNode->getBoundingBox().MaxEdge.X / pTerrainSceneNode->getScale().X;
+        s32 heightmapWidth; // = pTerrainSceneNode->getBoundingBox().MaxEdge.X / pTerrainSceneNode->getScale().X;
         s32 heightmapSize;
         //s32 heightmapHeight = heightmap->getDimension().Height;
 
@@ -454,21 +482,21 @@ namespace irr {
             // skip mesh buffers that are not the right type
             if (pMeshBuffer->getVertexType() != video::EVT_2TCOORDS)
                 continue;
-            
-            heightmapWidth = static_cast<s32>(core::squareroot(static_cast<f32>(pMeshBuffer->getVertexCount())));
+
+            heightmapWidth = static_cast<s32> (core::squareroot(static_cast<f32> (pMeshBuffer->getVertexCount())));
             heightmapSize = heightmapWidth * heightmapWidth;
 
             video::S3DVertex2TCoords* pVertices = (video::S3DVertex2TCoords*)pMeshBuffer->getVertices();
 
-            s32 brushWidth = pBrush->getSize().Width;//brushRadius * 2;
-            s32 brushHeight = pBrush->getSize().Height;//brushRadius * 2;
+            s32 brushWidth = pBrush->getSize().Width; //brushRadius * 2;
+            s32 brushHeight = pBrush->getSize().Height; //brushRadius * 2;
             u32 startIndex = vertexXCoordinate * heightmapWidth + vertexZCoordinate;
             startIndex -= ((brushWidth / 2) + (brushHeight / 2 * heightmapWidth));
 
             video::SColor* pBrushPixels = (video::SColor*)pBrush->lock(video::ETLM_READ_ONLY);
             for (s32 y = 0; y < brushHeight; ++y) {
                 for (s32 x = 0; x < brushWidth; ++x) {
-                    if ((startIndex + (x + y * heightmapWidth)) >= 0 
+                    if ((startIndex + (x + y * heightmapWidth)) >= 0
                             && (startIndex + (x + y * heightmapWidth)) <= heightmapSize) {
                         f32 hy = pVertices[startIndex + (x + y * heightmapWidth)].Pos.Y;
                         f32 bp = pBrushPixels[x + y * brushWidth].getRed() / 255.0 * raiseStep;
@@ -479,7 +507,7 @@ namespace irr {
                             pVertices[startIndex + (x + y * heightmapWidth)].Pos.Y = hy;
                         }
                     }
-                    ;//pVertices[startIndex + x + y * heightmapWidth].Pos.Y += 25;
+                    ; //pVertices[startIndex + x + y * heightmapWidth].Pos.Y += 25;
                 }
             }
             //pVertices[startIndex].Pos.Y += 25;
@@ -637,6 +665,31 @@ namespace irr {
      */
     video::ITexture* CBrushManager::getCurrentBrush() const {
         return pBrush;
+    }
+
+    u8 CBrushManager::getBrushType() const {
+        return brushType;
+    }
+
+    void CBrushManager::setBrushType(u8 brushType) {
+        bool recreationBrushSuccess = false;
+        if (this->brushType != brushType) {
+            switch (brushType) {
+                case 0:
+                    recreationBrushSuccess = constructBrush("Data/textures/Gras.jpg", "texture/curcle_brush.png");
+                    break;
+                case 1:
+                    recreationBrushSuccess = constructBrush("Data/textures/Gras.jpg", "texture/square_brush.png");
+                    break;
+                default:
+                    recreationBrushSuccess = constructBrush("Data/textures/Gras.jpg", "texture/square_brush.png");
+                    break;
+            }
+        }
+
+        if (recreationBrushSuccess) {
+            this->brushType = brushType;
+        }
     }
 
 } // end of namespace irr

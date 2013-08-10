@@ -81,7 +81,7 @@ namespace irr {
         pTerrainSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
         pTerrainSceneNode->scaleTexture(1.0f, 20.0f);
 
-        pTerrainSceneNodeSelector = pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
+        scene::ITriangleSelector* pTerrainSceneNodeSelector = pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
         pTerrainSceneNode->setTriangleSelector(pTerrainSceneNodeSelector);
         pTerrainSceneNodeSelector->drop();
 
@@ -129,7 +129,7 @@ namespace irr {
                 0);
 
         //Fith Pass: Lava, drawn above the Lightmap to make it "glow"
-        first_pass = pTerrainSceneNode->addPass(
+        /*first_pass = */pTerrainSceneNode->addPass(
                 pVideoDriver->getTexture("Data/textures/splat_4.tga"),
                 pVideoDriver->getTexture("Data/textures/lava_1.jpg"),
                 0,
@@ -156,9 +156,7 @@ namespace irr {
         //pMultiTexturingManager->drawAll();
         if (paintingEditMode || liftingEditMode) {
             if (collisionParameters.collisionDetected) {
-
-                pBrushManager->drawCircleBrushBorder(collisionParameters.collisionPosition);
-                //pBrushManager->drawSquareBrushBorder(core::vector3df(*intersectionPosition));
+                pBrushManager->drawBrushBorder(collisionParameters.collisionPosition);                
             }
         }
 
@@ -166,6 +164,14 @@ namespace irr {
             pBrushManager->raiseVerticesWithBrush(collisionParameters.collisionPosition.X / pTerrainSceneNode->getScale().X,
                     collisionParameters.collisionPosition.Z / pTerrainSceneNode->getScale().Z,
                     isLMBPressed);
+            /*core::array<core::triangle3df> triangles;
+            triangles.set_used(pTerrainSceneNode->getTriangleSelector()->getTriangleCount());
+            s32 ntris = 0;
+        
+            pTerrainSceneNode->getTriangleSelector()->getTriangles(&triangles[0], triangles.size(), ntris);
+            triangles[0].pointA.Y += 10;
+            triangles[0].pointB.Y += 10;
+            triangles[0].pointC.Y += 10;*/
         }
 
         //pBrushManager->drawAll();
@@ -194,7 +200,7 @@ namespace irr {
         core::triangle3df collisionTriangle;
         scene::ISceneNode* collisionNode = 0;
         if (collisionParameters.collisionDetected = pSceneManager->getSceneCollisionManager()->getCollisionPoint(rayFromScreenCoordinates,
-                pTerrainSceneNodeSelector,
+                pTerrainSceneNode->getTriangleSelector(),
                 collisionPosition,
                 collisionTriangle,
                 collisionNode)) {
@@ -272,10 +278,26 @@ namespace irr {
                     isLMBPressed = true;
                 } else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
                     isLMBPressed = false;
+                    // TODO maybe optimize recreating not all triangle selector, but only triangles inside BBox size of brush radius
+                    if (liftingEditMode) {
+                        //pTerrainSceneNode->getTriangleSelector()->drop();
+                        scene::ITriangleSelector* pTerrainTriangleSelector = 
+                                pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
+                        pTerrainSceneNode->setTriangleSelector(pTerrainTriangleSelector);
+                        pTerrainTriangleSelector->drop();
+                    }
                 } else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
                     isRMBPressed = true;
                 } else if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
                     isRMBPressed = false;
+                    // TODO maybe optimize recreating not all triangle selector, but only triangles inside BBox size of brush radius
+                    if (liftingEditMode) {
+                        //pTerrainSceneNode->getTriangleSelector()->drop();
+                        scene::ITriangleSelector* pTerrainTriangleSelector = 
+                                pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
+                        pTerrainSceneNode->setTriangleSelector(pTerrainTriangleSelector);
+                        pTerrainTriangleSelector->drop();
+                    }
                 }
             }
         }

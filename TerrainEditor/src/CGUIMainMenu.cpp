@@ -15,13 +15,14 @@ namespace irr {
          */
         CGUIMainMenu::CGUIMainMenu(IGUIEnvironment* pGUIEnviroment) {
             // create menu
-            IGUIContextMenu* menu = pGUIEnviroment->addMenu();
+            IGUIContextMenu* pContextMenu = pGUIEnviroment->addMenu();
             /*menu->addItem(L"File", -1, true, true);
             menu->addItem(L"World", -1, true, true);
             menu->addItem(L"Landscape", -1, true, true);
             menu->addItem(L"Objects", -1, true, true);
             menu->addItem(L"Triggers", -1, true, true);*/
-            menu->addItem(L"Help", -1, true, true);
+            pContextMenu->addItem(L"Brushes", -1, true, true);
+            pContextMenu->addItem(L"Help", -1, true, true);
 
             IGUIContextMenu* submenu;
 
@@ -67,9 +68,16 @@ namespace irr {
             submenu->addItem(L"Create trigger", GUI_ID_CAMERA_MAYA);
             submenu->addItem(L"Delete object(s)", GUI_ID_CAMERA_FIRST_PERSON);*/
 
+            // Brushes submenu
+            submenu = pContextMenu->getSubMenu(/*5*/0);
+            submenu->addItem(L"Use circle brush", GUI_ID_GUI_CHECK_CIRCLE_BRUSH, true, false, true);
+            submenu->addItem(L"Use square brush", GUI_ID_GUI_CHECK_SQUARE_BRUSH);
+            
             // Help submenu
-            submenu = menu->getSubMenu(/*5*/0);
+            submenu = pContextMenu->getSubMenu(/*5*/1);
             submenu->addItem(L"About", GUI_ID_ABOUT);
+            
+            
 
             // create toolbar
 

@@ -41,7 +41,7 @@ namespace irr {
          */
         virtual ~CBrushManager();
         
-        void constructBrush();
+        bool constructBrush(const io::path& decalImageFilePath, const io::path& brushFilePath);
         
         void createDecalNode(core::vector3df nodePosition, core::vector3df nodeNormal);
         
@@ -50,19 +50,8 @@ namespace irr {
          */
         void drawAll();
         
-        /**
-         * Draws square border over terrain node
-         * 
-         * @param brushCenter   coordinates of brush center
-         */
-        void drawSquareBrushBorder(core::vector3df brushCenter);
+        void drawBrushBorder(core::vector3df brushCenter);
         
-        /**
-         * Draws circle border over terrain node
-         * 
-         * @param brushCenter   coordinates of brush center
-         */
-        void drawCircleBrushBorder(core::vector3df brushCenter);
         
         video::ITexture* paintTextureWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, video::ITexture* paintingTexture);
         
@@ -152,13 +141,33 @@ namespace irr {
          * @return pointer to ITexture interface representing current brush
          */
         video:: ITexture* getCurrentBrush() const;
+        
+        u8 getBrushType() const;
+        
+        void setBrushType(u8 brushType);
     private:
+        
+        u8 brushType;
         
         bool isLCtrlButtonPressed;
         
         bool isLAltButtonPressed;
         
         void outOfTerrainPerimeterCheck(f32* x, f32* z);
+        
+        /**
+         * Draws square border over terrain node
+         * 
+         * @param brushCenter   coordinates of brush center
+         */
+        void drawSquareBrushBorder(core::vector3df brushCenter);
+        
+        /**
+         * Draws circle border over terrain node
+         * 
+         * @param brushCenter   coordinates of brush center
+         */
+        void drawCircleBrushBorder(core::vector3df brushCenter);
         
         /**
          * Pointer to ITexture interface representing current brush

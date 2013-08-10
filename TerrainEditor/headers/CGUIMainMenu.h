@@ -28,10 +28,10 @@ namespace irr {
             GUI_ID_WINDOW_SAVE_HEIGHTMAP,
             GUI_ID_EDITBOX_HEIGHTMAP_NAME,
 
-            GUI_ID_SKY_BOX_VISIBLE,
-            GUI_ID_TOGGLE_DEBUG_INFO,
-
-            GUI_ID_DEBUG_OFF,
+            //GUI_ID_MENU_BRUSHES,
+            GUI_ID_GUI_CHECK_CIRCLE_BRUSH,
+            GUI_ID_GUI_CHECK_SQUARE_BRUSH,            
+            
             GUI_ID_DEBUG_BOUNDING_BOX,
             GUI_ID_DEBUG_NORMALS,
             GUI_ID_DEBUG_SKELETON,
@@ -87,7 +87,7 @@ namespace irr {
              * Virtual destructor (not implemented)
              */
             virtual ~CGUIMainMenu() {
-            };
+            };            
         };
 
     } // end of namespace gui

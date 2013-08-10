@@ -84,6 +84,7 @@ namespace irr {
                 closeEverything();
                 pDevice->closeDevice();
                 pDevice->drop();
+                exit(0);
             }
         }
         return false;
@@ -94,8 +95,7 @@ namespace irr {
      */
     void CMainApplication::runDevice() {
         while (pDevice->run()) {
-            if (pDevice->isWindowActive()) {
-                pGUIManager->resetAllGUIElements();
+            if (pDevice->isWindowActive()) {                
                 core::stringw windowCaption = "Terrain Editor FPS = ";
                 windowCaption += pVideoDriver->getFPS();
                 pDevice->setWindowCaption(windowCaption.c_str());
