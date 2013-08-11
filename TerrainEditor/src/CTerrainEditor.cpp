@@ -156,7 +156,7 @@ namespace irr {
         //pMultiTexturingManager->drawAll();
         if (paintingEditMode || liftingEditMode) {
             if (collisionParameters.collisionDetected) {
-                pBrushManager->drawBrushBorder(collisionParameters.collisionPosition);                
+                pBrushManager->drawBrushBorder(collisionParameters.collisionPosition);
             }
         }
 
@@ -281,7 +281,7 @@ namespace irr {
                     // TODO maybe optimize recreating not all triangle selector, but only triangles inside BBox size of brush radius
                     if (liftingEditMode) {
                         //pTerrainSceneNode->getTriangleSelector()->drop();
-                        scene::ITriangleSelector* pTerrainTriangleSelector = 
+                        scene::ITriangleSelector* pTerrainTriangleSelector =
                                 pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
                         pTerrainSceneNode->setTriangleSelector(pTerrainTriangleSelector);
                         pTerrainTriangleSelector->drop();
@@ -293,7 +293,7 @@ namespace irr {
                     // TODO maybe optimize recreating not all triangle selector, but only triangles inside BBox size of brush radius
                     if (liftingEditMode) {
                         //pTerrainSceneNode->getTriangleSelector()->drop();
-                        scene::ITriangleSelector* pTerrainTriangleSelector = 
+                        scene::ITriangleSelector* pTerrainTriangleSelector =
                                 pSceneManager->createTerrainTriangleSelector(pTerrainSceneNode, 0);
                         pTerrainSceneNode->setTriangleSelector(pTerrainTriangleSelector);
                         pTerrainTriangleSelector->drop();
@@ -316,6 +316,28 @@ namespace irr {
         }
 
         return false;
+    }
+
+    void CTerrainEditor::onKillFocus() {
+        // Avoid that the FPS-camera continues moving when the user presses alt-tab while 
+        // moving the camera. 
+        const core::list<scene::ISceneNodeAnimator*>& animators = pCameraSceneNode->getAnimators();
+        core::list<irr::scene::ISceneNodeAnimator*>::ConstIterator iter = animators.begin();
+        while (iter != animators.end()) {
+            if ((*iter)->getType() == scene::ESNAT_GOT_CAM) {
+                // we send a key-down event for all keys used by this animator
+                scene::CSceneNodeAnimatorCameraTerrain* GOTAnimator = static_cast<scene::CSceneNodeAnimatorCameraTerrain*> (*iter);
+                const core::array<SKeyMap>& keyMap = GOTAnimator->getKeyMap();
+                for (irr::u32 i = 0; i < keyMap.size(); ++i) {
+                    irr::SEvent event;
+                    event.EventType = EET_KEY_INPUT_EVENT;
+                    event.KeyInput.Key = keyMap[i].KeyCode;
+                    event.KeyInput.PressedDown = false;
+                    GOTAnimator->OnEvent(event);
+                }
+            }
+            ++iter;
+        }
     }
 
     /**

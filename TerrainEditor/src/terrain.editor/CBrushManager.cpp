@@ -157,8 +157,7 @@ namespace irr {
             *z = pTerrainSceneNode->getBoundingBox().MinEdge.Z + 0.1;
         }
     }
-
-    // TODO write rotation
+    
     // optimum step = terrain grid cell width; how get this?
 
     /**
@@ -194,7 +193,7 @@ namespace irr {
         video::S3DVertex vertex;
 
         u16 indexNumber = 0;
-
+        
         // calculate start positions, put them in vertices array and its indexes in index array
         /* For every position we calculate new coordinates, remember them as new one, check out-of-terrain perimeter
          * conditions & set result as vertex of border. Exactly in such order, cause if you will set new value
@@ -212,6 +211,7 @@ namespace irr {
         vertex.Pos = core::vector3df(x,
                 pTerrainSceneNode->getHeight(x, z) + hoverStep,
                 z);
+        vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
         verticesList[indexNumber] = vertex;
         indicesList[indexNumber] = indexNumber;
 
@@ -230,6 +230,7 @@ namespace irr {
         vertex.Pos = core::vector3df(x,
                 pTerrainSceneNode->getHeight(x, z) + hoverStep,
                 z);
+        vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
         verticesList[forthSideIndexBegin] = vertex;
         indicesList[forthSideIndexBegin] = forthSideIndexBegin;
 
@@ -242,6 +243,7 @@ namespace irr {
         vertex.Pos = core::vector3df(x,
                 pTerrainSceneNode->getHeight(x, z) + hoverStep,
                 z);
+        vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
         verticesList[secondSideIndexBegin] = vertex;
         indicesList[secondSideIndexBegin] = secondSideIndexBegin;
 
@@ -254,6 +256,7 @@ namespace irr {
         vertex.Pos = core::vector3df(x,
                 pTerrainSceneNode->getHeight(x, z) + hoverStep,
                 z);
+        vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
         verticesList[thirdSideIndexBegin] = vertex;
         indicesList[thirdSideIndexBegin] = thirdSideIndexBegin;
 
@@ -269,6 +272,7 @@ namespace irr {
                     = core::vector3df(x,
                     pTerrainSceneNode->getHeight(x, z) + hoverStep,
                     z);
+            vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
             verticesList[indexNumber] = vertex;
             indicesList[indexNumber] = indexNumber;
 
@@ -282,6 +286,7 @@ namespace irr {
                     = core::vector3df(x,
                     pTerrainSceneNode->getHeight(x, z) + hoverStep,
                     z);
+            vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
             verticesList[forthSideIndexBegin + indexNumber] = vertex;
             indicesList[forthSideIndexBegin + indexNumber] = forthSideIndexBegin + indexNumber;
 
@@ -295,6 +300,7 @@ namespace irr {
                     = core::vector3df(x,
                     pTerrainSceneNode->getHeight(x, z) + hoverStep,
                     z);
+            vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
             verticesList[secondSideIndexBegin + indexNumber] = vertex;
             indicesList[secondSideIndexBegin + indexNumber] = secondSideIndexBegin + indexNumber;
 
@@ -308,6 +314,7 @@ namespace irr {
                     = core::vector3df(x,
                     pTerrainSceneNode->getHeight(x, z) + hoverStep,
                     z);
+            vertex.Pos.rotateXZBy(brushYAngle, brushCenter);
             verticesList[thirdSideIndexBegin + indexNumber] = vertex;
             indicesList[thirdSideIndexBegin + indexNumber] = thirdSideIndexBegin + indexNumber;
         }
@@ -338,8 +345,6 @@ namespace irr {
                 break;
         }
     }
-
-    // TODO rotation (not need in circle, but use for brush direction)
 
     /**
      * Draws circle border over terrain node
@@ -463,9 +468,7 @@ namespace irr {
         return paintingTexture;
     }
 
-    /*==============================================================================
-  Raise or lower terrain (selected vertice by brush)
-==============================================================================*/
+
     void CBrushManager::raiseVerticesWithBrush(s32 vertexXCoordinate, s32 vertexZCoordinate, bool up) {
         // TODO make dynamic triangle selector
 
@@ -549,11 +552,11 @@ namespace irr {
                 }
                 return true;
             } else if (isLAltButtonPressed) {
-                brushYAngle += event.MouseInput.Wheel;
-                if (brushYAngle > 2.0f) {
-                    brushYAngle -= 2.0f;
-                } else if (brushYAngle < -2.0f) {
-                    brushYAngle += 2.0f;
+                brushYAngle += 4.0f;
+                if (brushYAngle > 360.0f) {
+                    brushYAngle -= 360.0f;
+                } else if (brushYAngle < -360.0f) {
+                    brushYAngle += 360.0f;
                 }
                 return true;
             }

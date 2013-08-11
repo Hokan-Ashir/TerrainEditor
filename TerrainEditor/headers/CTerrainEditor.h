@@ -151,6 +151,8 @@ namespace irr {
          * @param liftingEditMode new value of lifting edit mode flag
          */
         void setLiftingEditMode(bool liftingEditMode);
+        
+        void onKillFocus();
     private:     
         /**
          * Texture pass from CMultiTexturingManager which will be edited by brush

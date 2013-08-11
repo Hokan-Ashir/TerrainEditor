@@ -36,8 +36,18 @@ namespace irr {
 
         // create GUI enviroment & set its font
         pGUIEnviroment = pDevice->getGUIEnvironment();
-        gui::IGUIFont* font = pGUIEnviroment->getFont("fonthaettenschweiler.bmp");
-        pGUIEnviroment->getSkin()->setFont(font);
+        // fonthaettenschweiler.bmp
+        // fontlucida.png
+        gui::IGUIFont* font = pGUIEnviroment->getFont("fontlucida.png");
+        if (font) {
+            pGUIEnviroment->getSkin()->setFont(font);
+            font->drop();
+        }
+        /*gui::IGUIFont* font1 = pGUIEnviroment->getSkin()->getFont(gui::EGDF_DEFAULT);
+        gui::IGUIFont* font2 = pGUIEnviroment->getSkin()->getFont(gui::EGDF_BUTTON);
+        gui::IGUIFont* font3 = pGUIEnviroment->getSkin()->getFont(gui::EGDF_WINDOW);
+        gui::IGUIFont* font4 = pGUIEnviroment->getSkin()->getFont(gui::EGDF_MENU);
+        gui::IGUIFont* font5 = pGUIEnviroment->getSkin()->getFont(gui::EGDF_TOOLTIP);*/
 
         pGUIManager = new CGUIManager(pDevice, pTerrainEditor);
 
@@ -79,6 +89,7 @@ namespace irr {
      * @return true if incomming event processed
      */
     bool CMainApplication::OnEvent(const SEvent& event) {
+        // TODO check out right closing device such a way
         if ((event.EventType == EET_KEY_INPUT_EVENT) && event.KeyInput.PressedDown) {
             if (event.KeyInput.Key == KEY_ESCAPE) {
                 closeEverything();
@@ -94,8 +105,16 @@ namespace irr {
      * Run main device loop & run all other drawing function from subclasses
      */
     void CMainApplication::runDevice() {
+        // remember state so we notice when the window does lose the focus
+        bool hasFocus = pDevice->isWindowFocused();
         while (pDevice->run()) {
-            if (pDevice->isWindowActive()) {                
+            // Catch focus changes (workaround until Irrlicht has events for this)
+            bool focused = pDevice->isWindowFocused();
+            if (hasFocus && !focused)
+                pTerrainEditor->onKillFocus();
+            hasFocus = focused;
+
+            if (pDevice->isWindowActive()) {
                 core::stringw windowCaption = "Terrain Editor FPS = ";
                 windowCaption += pVideoDriver->getFPS();
                 pDevice->setWindowCaption(windowCaption.c_str());

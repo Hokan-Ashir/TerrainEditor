@@ -27,6 +27,8 @@ namespace irr {
             
             GUI_ID_WINDOW_SAVE_HEIGHTMAP,
             GUI_ID_EDITBOX_HEIGHTMAP_NAME,
+            GUI_ID_BUTTON_SAVE,
+            GUI_ID_BUTTON_CANCEL,
 
             //GUI_ID_MENU_BRUSHES,
             GUI_ID_GUI_CHECK_CIRCLE_BRUSH,

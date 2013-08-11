@@ -23,6 +23,11 @@ namespace irr {
      * inspired by 08.MeshViewer tutorial
      */
     class CGUIManager : public IEventReceiver {
+#define WINDOW_SIZE_WIDTH 300
+#define WINDOW_SIZE_HEIGHT 200
+#define BUTTON_SIZE_WIDTH 50
+#define BUTTON_SIZE_HEIGHT 20
+        
     public:
         /**
          * Constructor
@@ -56,9 +61,9 @@ namespace irr {
 
     private:
         void OnMenuItemSelected(gui::IGUIContextMenu* pGUIContextMenu);
-        
+
         void OnButtonPressed(s32 id);
-        
+
         /**
          * Pointer to CTerrainEditor class instance
          */
@@ -67,7 +72,7 @@ namespace irr {
         /**
          * Pointer to IrrlichtDevice class instance
          */
-        IrrlichtDevice* pDevice;        
+        IrrlichtDevice* pDevice;
     };
 
 } // end of namespace irr

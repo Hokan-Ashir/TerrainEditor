@@ -21,7 +21,7 @@ namespace irr {
         const ESCENE_NODE_ANIMATOR_TYPE ESNAT_GOT_CAM = (ESCENE_NODE_ANIMATOR_TYPE)
         MAKE_IRR_ID('a', 'G', 'O', 'T'); // GOT (Glide over Terrain) Animator
 
-        enum EKEY_ACTION_TERRAIN {
+        /*enum EKEY_ACTION_TERRAIN {
             EKAT_MOVE_UP = 0,
             EKAT_MOVE_DOWN,
             EKAT_MOVE_LEFT,
@@ -29,7 +29,7 @@ namespace irr {
 
             //! This value is not used. It only forces this enumeration to compile in 32 bit.
             EKAT_FORCE_32BIT = 0x7fffffff
-        };
+        };*/
 
         //! Special scene node animator for RTS (or any other terrain-related) cameras
 
@@ -101,22 +101,12 @@ namespace irr {
 
             virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options = 0);
 
-            struct SCamKeyMap {
-
-                SCamKeyMap() {
-                };
-
-                SCamKeyMap(s32 a, EKEY_CODE k) : action(a), keycode(k) {
-                }
-
-                s32 action;
-                EKEY_CODE keycode;
-            };
-
             //! Sets the keyboard mapping for this animator
             /** Helper function for the clone method.
             \param keymap the new keymap array */
-            void setKeyMap(const core::array<SCamKeyMap>& keymap);
+            void setKeyMap(const core::array<SKeyMap>& keymap);
+            
+            const core::array<SKeyMap>& getKeyMap() const;
 
         private:
             void allKeysUp();
@@ -132,7 +122,7 @@ namespace irr {
 
             s32 LastAnimationTime;
 
-            core::array<SCamKeyMap> KeyMap;
+            core::array<SKeyMap> KeyMap;
             core::position2d<f32> RMouseDownCursor, CursorPos;
 
             bool MouseActive;

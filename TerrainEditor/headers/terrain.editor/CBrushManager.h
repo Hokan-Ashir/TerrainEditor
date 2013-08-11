@@ -187,7 +187,7 @@ namespace irr {
         scene::ITerrainSceneNode* pTerrainSceneNode;
         
         /**
-         * Current brush angle around Y-axis
+         * Current brush angle around Y-axis (in degrees)
          */
         f32 brushYAngle;
         

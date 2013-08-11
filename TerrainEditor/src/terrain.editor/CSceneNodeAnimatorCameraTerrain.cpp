@@ -49,10 +49,10 @@ namespace irr {
             // create key map
             if (!keyMapArray || !keyMapSize) {
                 // create default key map
-                KeyMap.push_back(SCamKeyMap(EKAT_MOVE_UP, KEY_UP));
-                KeyMap.push_back(SCamKeyMap(EKAT_MOVE_DOWN, KEY_DOWN));
-                KeyMap.push_back(SCamKeyMap(EKAT_MOVE_LEFT, KEY_LEFT));
-                KeyMap.push_back(SCamKeyMap(EKAT_MOVE_RIGHT, KEY_RIGHT));
+                KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, KEY_UP));
+                KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, KEY_DOWN));
+                KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, KEY_LEFT));
+                KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, KEY_RIGHT));
             } else {
                 // create custom key map
                 setKeyMap(keyMapArray, keyMapSize);
@@ -78,8 +78,8 @@ namespace irr {
             switch (evt.EventType) {
                 case EET_KEY_INPUT_EVENT:
                     for (u32 i = 0; i < KeyMap.size(); ++i) {
-                        if (KeyMap[i].keycode == evt.KeyInput.Key) {
-                            CursorKeys[KeyMap[i].action] = evt.KeyInput.PressedDown;
+                        if (KeyMap[i].KeyCode == evt.KeyInput.Key) {
+                            CursorKeys[KeyMap[i].Action] = evt.KeyInput.PressedDown;
                             return true;
                         }
                     }
@@ -178,18 +178,18 @@ namespace irr {
 
             pos.set(sin(relativeRotation.Y * core::DEGTORAD), 0.f, cos(relativeRotation.Y * core::DEGTORAD));
 
-            if (CursorKeys[EKAT_MOVE_UP] || CursorPos.Y < 0.01)
+            if (CursorKeys[EKA_MOVE_FORWARD] || CursorPos.Y < 0.01)
                 target += pos * timeDiff * MoveSpeed;
 
-            if (CursorKeys[EKAT_MOVE_DOWN] || CursorPos.Y > 0.99)
+            if (CursorKeys[EKA_MOVE_BACKWARD] || CursorPos.Y > 0.99)
                 target -= pos * timeDiff * MoveSpeed;
 
             pos.set(-cos(relativeRotation.Y * core::DEGTORAD), 0.f, sin(relativeRotation.Y * core::DEGTORAD));
 
-            if (CursorKeys[EKAT_MOVE_LEFT] || CursorPos.X < 0.01)
+            if (CursorKeys[EKA_STRAFE_LEFT] || CursorPos.X < 0.01)
                 target += pos * timeDiff * MoveSpeed;
 
-            if (CursorKeys[EKAT_MOVE_RIGHT] || CursorPos.X > 0.99)
+            if (CursorKeys[EKA_STRAFE_RIGHT] || CursorPos.X > 0.99)
                 target -= pos * timeDiff * MoveSpeed;
 
             // update target position
@@ -287,13 +287,17 @@ namespace irr {
             // add actions
             for (u32 i = 0; i < count; ++i) {
                 switch (map[i].Action) {
-                    case EKAT_MOVE_UP: KeyMap.push_back(SCamKeyMap(EKAT_MOVE_UP, map[i].KeyCode));
+                    case EKA_MOVE_FORWARD:
+                        KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, map[i].KeyCode));
                         break;
-                    case EKAT_MOVE_DOWN: KeyMap.push_back(SCamKeyMap(EKAT_MOVE_DOWN, map[i].KeyCode));
+                    case EKA_MOVE_BACKWARD:
+                        KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, map[i].KeyCode));
                         break;
-                    case EKAT_MOVE_LEFT: KeyMap.push_back(SCamKeyMap(EKAT_MOVE_LEFT, map[i].KeyCode));
+                    case EKA_STRAFE_LEFT:
+                        KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, map[i].KeyCode));
                         break;
-                    case EKAT_MOVE_RIGHT: KeyMap.push_back(SCamKeyMap(EKAT_MOVE_RIGHT, map[i].KeyCode));
+                    case EKA_STRAFE_RIGHT:
+                        KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, map[i].KeyCode));
                         break;
                     default:
                         break;
@@ -309,8 +313,12 @@ namespace irr {
             return newAnimator;
         }
 
-        void CSceneNodeAnimatorCameraTerrain::setKeyMap(const core::array<SCamKeyMap>& keymap) {
+        void CSceneNodeAnimatorCameraTerrain::setKeyMap(const core::array<SKeyMap>& keymap) {
             KeyMap = keymap;
+        }
+        
+        const core::array<SKeyMap>& CSceneNodeAnimatorCameraTerrain::getKeyMap() const {
+            return KeyMap;
         }
 
         void CSceneNodeAnimatorCameraTerrain::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const {

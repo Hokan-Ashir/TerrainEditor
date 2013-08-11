@@ -124,7 +124,7 @@ namespace irr {
         /**
          * Pointer to CGUIManager class instance
          */
-        CGUIManager* pGUIManager;
+        CGUIManager* pGUIManager;               
     };
 
 } // end of namespace irr

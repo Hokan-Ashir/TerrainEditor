@@ -87,20 +87,79 @@ namespace irr {
         switch (id) {
             case gui::GUI_ID_BUTTON_SAVE_SCENE:
             {
-                pTerrainEditor->getCameraSceneNode()->setInputReceiverEnabled(false);
-                // create the toolbox window
-                gui::IGUIWindow* saveTerrainHeightMapWindow = pDevice->getGUIEnvironment()->addWindow(core::rect<s32>(
-                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 - 150,
-                        pDevice->getVideoDriver()->getScreenSize().Height / 2 - 100),
-                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 + 150,
-                        pDevice->getVideoDriver()->getScreenSize().Height / 2 + 100)),
-                        false, L"Save terrain heightmap", 0, gui::GUI_ID_WINDOW_SAVE_HEIGHTMAP);
+                gui::IGUIEnvironment* pGUIEnvironment = pDevice->getGUIEnvironment();
+                // create save terrain [height]map window
+                gui::IGUIWindow* saveTerrainMapWindow = pGUIEnvironment->addWindow(core::rect<s32>(
+                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 - WINDOW_SIZE_WIDTH / 2,
+                        pDevice->getVideoDriver()->getScreenSize().Height / 2 - WINDOW_SIZE_HEIGHT / 2),
+                        core::position2d<s32>(pDevice->getVideoDriver()->getScreenSize().Width / 2 + WINDOW_SIZE_WIDTH / 2,
+                        pDevice->getVideoDriver()->getScreenSize().Height / 2 + WINDOW_SIZE_HEIGHT / 2)),
+                        true, L"Save terrain heightmap", 0, gui::GUI_ID_WINDOW_SAVE_HEIGHTMAP);
+                //saveTerrainHeightMapWindow->getMaximizeButton()->setVisible(false);
+                //saveTerrainHeightMapWindow->getMinimizeButton()->setVisible(false);
 
-                pDevice->getGUIEnvironment()->addStaticText(L"Enter terrain heightmap file name:", core::rect<s32>(10, 48, 190, 66), false, false, saveTerrainHeightMapWindow);
-                pDevice->getGUIEnvironment()->addEditBox(L"", core::rect<s32>(10, 66, 190, 88), true, saveTerrainHeightMapWindow, gui::GUI_ID_EDITBOX_HEIGHTMAP_NAME);
-                // save current terrain heightmap
-                // pTerrainEditor->saveTerrainHeightMap("heightmap_");
-                // pTerrainEditor->getCameraSceneNode()->setInputReceiverEnabled(true);
+                s32 fontHeight = pGUIEnvironment->getSkin()->getFont(gui::EGDF_DEFAULT)->getDimension(L"Enter terrain heightmap file name:").Height;
+                s32 xBegin = WINDOW_SIZE_WIDTH / 20;
+                s32 xEnd = xBegin + pGUIEnvironment->getSkin()->getFont(gui::EGDF_DEFAULT)->getDimension(L"Enter terrain heightmap file name:").Width;
+                s32 yBegin = WINDOW_SIZE_HEIGHT / 8;
+                s32 yEnd = WINDOW_SIZE_HEIGHT / 8 + fontHeight;
+                pGUIEnvironment->addStaticText(L"Enter terrain heightmap file name:",
+                        core::rect<s32>(xBegin,
+                        yBegin,
+                        xEnd,
+                        yEnd),
+                        false, false, saveTerrainMapWindow);
+
+                yBegin = yEnd;
+                yEnd = yBegin + fontHeight;
+                pGUIEnvironment->addEditBox(L"",
+                        core::rect<s32>(xBegin,
+                        yBegin,
+                        xEnd,
+                        yEnd),
+                        true, saveTerrainMapWindow, gui::GUI_ID_EDITBOX_HEIGHTMAP_NAME);
+
+                yBegin = yEnd + fontHeight;
+                xEnd = xBegin + BUTTON_SIZE_WIDTH;
+                yEnd = yBegin + BUTTON_SIZE_HEIGHT;
+                pGUIEnvironment->addButton(core::rect<s32>(xBegin,
+                        yBegin,
+                        xEnd,
+                        yEnd),
+                        saveTerrainMapWindow, gui::GUI_ID_BUTTON_SAVE, L"Save");
+
+                xBegin = xEnd + fontHeight;
+                xEnd = xBegin + BUTTON_SIZE_WIDTH;
+                pGUIEnvironment->addButton(core::rect<s32>(xBegin,
+                        yBegin,
+                        xEnd,
+                        yEnd),
+                        saveTerrainMapWindow, gui::GUI_ID_BUTTON_CANCEL, L"Cancel");
+            }
+                break;
+            case gui::GUI_ID_BUTTON_SAVE:
+            {
+                // TODO save map. not only heightmap
+                const wchar_t* terrainMapName = pDevice->getGUIEnvironment()->getRootGUIElement()->getElementFromId(gui::GUI_ID_EDITBOX_HEIGHTMAP_NAME, true)->getText();
+                if (wcscmp(terrainMapName, L"") != 0) {
+                    pTerrainEditor->saveTerrainHeightMap(terrainMapName);
+                    gui::IGUIElement* saveTerrainMapWindow = pDevice->getGUIEnvironment()->getRootGUIElement()->getElementFromId(gui::GUI_ID_WINDOW_SAVE_HEIGHTMAP, true);
+                    // this is a workaround to make sure it's no longer the hovered element, crashes on pressing 1-2 times ESC
+                    // From CGUIMessageBox.cpp
+                    saveTerrainMapWindow->setVisible(false);
+                    pDevice->getGUIEnvironment()->setFocus(0);
+                    saveTerrainMapWindow->remove();
+                }
+            }
+                break;
+            case gui::GUI_ID_BUTTON_CANCEL:
+            {
+                gui::IGUIElement* saveTerrainMapWindow = pDevice->getGUIEnvironment()->getRootGUIElement()->getElementFromId(gui::GUI_ID_WINDOW_SAVE_HEIGHTMAP, true);
+                // this is a workaround to make sure it's no longer the hovered element, crashes on pressing 1-2 times ESC
+                // From CGUIMessageBox.cpp
+                saveTerrainMapWindow->setVisible(false);
+                pDevice->getGUIEnvironment()->setFocus(0);
+                saveTerrainMapWindow->remove();
             }
                 break;
             case gui::GUI_ID_BUTTON_PAINT:
